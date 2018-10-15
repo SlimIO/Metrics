@@ -1,10 +1,11 @@
 const is = require("@slimio/is");
-const Addon = require("@slimio/Addons");
+
 /**
  * @class Entity
  * @property {String} name Entity name
  * @property {String} description Entity description
  * @property {Number=} [parent=0] Parent Entity number
+ * @property {Addon} addon Addon attach to listen addon event
  */
 class Entity {
     /**
@@ -33,9 +34,11 @@ class Entity {
      * @returns {Entity}
      */
     use(addon) {
-        if (!is.directInstanceOf(addon, Addon)) {
+        if (addon.contructor.name !== "Addon") {
             throw new TypeError("addon param must be an Addon object");
         }
+
+        this.addon = addon;
 
         return this;
     }
@@ -68,13 +71,27 @@ class Entity {
      * @throws {TypeError}
      * @return {Entity}
      */
-    set(key, value) {
+    async set(key, value) {
         if (!is.string(key)) {
             throw new TypeError("key param must be a string");
         }
         if (!is.number(value)) {
             throw new TypeError("value param must be a number");
         }
+
+        if (this.addon) {
+            throw new Error("You must attach an addon with 'use' method");
+        }
+        await new Promise((resolve) => {
+            this.addon.on("addonLoaded", (addonName) => {
+                console.log(`AddonLoaded : ${addonName}`);
+                if (addonName === "event") {
+                    resolve();
+                }
+
+            });
+        })
+        
 
         return this;
     }
