@@ -1,4 +1,3 @@
+const Metric = require("./src/metric.class.js");
 
-
-module.exports = {
-};
+module.exports = Metric;

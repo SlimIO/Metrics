@@ -1,4 +1,5 @@
 const is = require("@slimio/is");
+const IdentityCard = require("./identityCard.class.js");
 
 /**
  * @class Entity
@@ -8,8 +9,10 @@ const is = require("@slimio/is");
  * @property {Addon} addon Addon attach to listen addon event
  */
 class Entity {
+
     /**
      * @constructor
+     * @param {!Addon} addon Addon
      * @param {!String} name Entity name
      * @param {Object} options option
      *
@@ -20,43 +23,41 @@ class Entity {
             throw new TypeError("name param must be a string");
         }
 
-        this.name = name;
-
-        this.description = options.description ? options.description : "N/A";
-        this.parent = options.parent ? options.parent : 1;
-    }
-
-    /**
-     * @public
-     * @method use
-     * @memberof Entity#
-     * @param {!Addon} addon addon
-     * @returns {Entity}
-     */
-    use(addon) {
-        if (addon.contructor.name !== "Addon") {
-            throw new TypeError("addon param must be an Addon object");
+        if (!is.nullOrUndefined(options.description) && !is.string(options.description)) {
+            throw new TypeError("options.description param must be a string");
         }
 
-        this.addon = addon;
+        if (!is.nullOrUndefined(options.parent) && !is.number(options.parent)) {
+            throw new TypeError("options.parent param must be a number");
+        }
 
-        return this;
+        this.name = name;
+
+        // this.description : good ternary ?
+        this.description = options.description; /* ? options.description : "N/A"; */
+        this.parent = options.parent; /* ? options.parent : 1; */
+
+        this.descriptor = new Map();
+        this.entities = new Map();
+
+        this.id = ++Entity.count;
     }
 
+
     /**
-     * @public
+     * @private
      * @method parent
      * @memberof Entity#
-     * @param {!Entity} entity entity
+     * @param {!Entity} entity Parent entity
      *
      * @throws {TypeError}
      * @return {Entity}
      */
     parent(entity) {
-        if (!is.directInstanceOf(entity, Entity)) {
-            throw new TypeError("entity param must be an Entity object");
+        if (entity.constructor.name !== "Entity") {
+            throw new TypeError("entity param must be an <Entity> object");
         }
-        this.parent = entity.parent;
+        this.parent = entity.id;
 
         return this;
     }
@@ -71,30 +72,63 @@ class Entity {
      * @throws {TypeError}
      * @return {Entity}
      */
-    async set(key, value) {
+    set(key, value) {
         if (!is.string(key)) {
-            throw new TypeError("key param must be a string");
+            throw new TypeError("key param must be a <string>");
         }
-        if (!is.number(value)) {
-            throw new TypeError("value param must be a number");
+        if (!is.number(value) && !is.string(value)) {
+            throw new TypeError("value param must be a <number> or a <string>");
         }
 
-        if (this.addon) {
-            throw new Error("You must attach an addon with 'use' method");
-        }
-        await new Promise((resolve) => {
-            this.addon.on("addonLoaded", (addonName) => {
-                console.log(`AddonLoaded : ${addonName}`);
-                if (addonName === "event") {
-                    resolve();
-                }
-
-            });
-        })
-        
+        this.descriptor.set(key, value);
 
         return this;
     }
+
+    /**
+     * @public
+     * @method eventLoaded
+     * @memberof Entity#
+     * @param {Addon} addon addon
+     * @return {void}
+     */
+    eventLoaded(addon) {
+        const data = {
+            name: this.name,
+            description: this.description,
+            descriptor: this.descriptor,
+            parent: this.parent
+        };
+        // console.log(this);
+        addon.sendMessage("events.declare_entity", { args: [data] }).subscribe((id) => {
+            this.id = id;
+            for (const [, entity] of this.entities) {
+                entity.parentId(this.id);
+                entity.eventLoaded(addon);
+            }
+            if (this.identityCards.size() > 0) {
+                for (const [, identityCard] of this.identityCards) {
+                    identityCard.entityId(this.id);
+                    identityCard.eventLoaded(addon);
+                }
+            }
+        });
+    }
+
+    /**
+     * @method getDataEntity
+     * @memberof Entity#
+     * @return {Object}
+     */
+    getDataEntity() {
+        return {
+            name: this.name,
+            description: this.description,
+            descriptor: this.descriptor,
+            parent: this.parent
+        };
+    }
 }
+Entity.count = 0;
 
 module.exports = Entity;
