@@ -1,5 +1,6 @@
 const is = require("@slimio/is");
 const Entity = require("./entity.class.js");
+const IdentityCard = require("./identityCard.class.js");
 
 /**
  * @class Metric
@@ -19,17 +20,16 @@ class Metric {
 
         this.eventLoaded = false;
         this.addon = addon;
-        this.entities = new Map();
-        this.identityCards = new Map();
+        this.entities = [];
+        this.identityCards = [];
 
         this.addon.on("addonLoaded", (addonName) => {
             console.log(`AddonLoaded : ${addonName}`);
             if (addonName === "events") {
                 this.eventLoaded = true;
-                if (is.directInstanceOf(this.entity, Entity)) {
+                if (this.entities.length > 0) {
                     this.declareEntity();
                 }
-                // this.entity.eventLoaded(this.addon);
             }
         });
     }
@@ -48,40 +48,91 @@ class Metric {
     }
 
     /**
+     * @private
      * @method declareEntity
+     * @memberof Metric#
+     * @param {Number} parentIndex parentIndex
+     * @return {Promise<void>}
      */
-    async declareEntity() {
+    async declareEntity(parentIndex = 1) {
 
         const promises = [];
-        const ids = [];
-        for (const [, entity] of this.entities) {
-            if (entity.parent === 1) {
+        const entityIds = [];
+
+        for (const entity of this.entities) {
+            if (entity.parent === parentIndex) {
                 const data = entity.getDataEntity();
-                ids.push(entity.id);
+                entityIds.push(entity.id);
                 promises.push(this.sendMessage("events.declare_entity", data));
-                entity.parentId(this.id);
-                entity.eventLoaded(this.addon);
             }
         }
         const promisesIds = await Promise.all(promises);
-        for (let i = 0; i < ids.length; i++) {
-            for (const [, entity] of this.entities) {
-                if (entity.id === ids[i]) {
+        for (let i = 0; i < entityIds.length; i++) {
+            // Get db id to entities published and link parentId
+
+            for (const entity of this.entities) {
+                if (entity.id === entityIds[i]) {
                     entity.id = promisesIds[i];
                 }
-                if (entity.parent === ids[i]) {
+                if (entity.parent === entityIds[i]) {
                     entity.parent = promisesIds[i];
                 }
-                
             }
+            this.declareIdentityCard(promisesIds);
+            this.declareEntity(promisesIds[i]);
+        }
+    }
+
+    /**
+     * @private
+     * @method declareIdentityCard
+     * @memberof Metric#
+     * @param  {Array<Number>} entityId entityId
+     * @return {Promise<void>};
+     */
+    async declareIdentityCard(entityId) {
+        const promisesIdentityCard = [];
+
+        const identityCards = this.identityCards.filter((ic) => {
+            for (const entId of entityId) {
+                if (entId === ic.entity.id) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        const identityCardPubliched = [];
+
+        for (const identityCard of identityCards) {
+            const data = identityCard.getDataIdentityCard();
+            promisesIdentityCard.push(this.sendMessage("events.declare_mic", data));
+            identityCardPubliched.push(identityCard);
         }
 
-        if (this.identityCards.size() > 0) {
-            for (const [, identityCard] of this.identityCards) {
-                identityCard.entityId(this.id);
-                identityCard.eventLoaded(this.Entityaddon);
-            }
+        const IdentityCardIds = await Promise.all(promisesIdentityCard);
+        for (let i = 0; i < identityCards.length; i++) {
+            identityCards[i].id = IdentityCardIds[i];
         }
+    }
+
+
+    /**
+     * @method identityCard
+     * @param {String} name Entity name
+     * @param {Object} options Entity options
+     * @return {Metric}
+     */
+    identityCard(name, options) {
+        const identityCard = new IdentityCard(name, options);
+        this.identityCards.push(identityCard);
+        if (this.eventLoaded === true) {
+            // this.entity.eventLoaded(this.addon);
+            this.declareEntity();
+        }
+
+        return this;
     }
 
     /**
@@ -91,14 +142,14 @@ class Metric {
      * @return {Entity}
      */
     entity(name, options) {
-        const entity = new Entity(name, options);
-        this.entities.set(name, entity);
-        if (this.eventLoaded === true) {
-            // this.entity.eventLoaded(this.addon);
-            this.declareEntity();
-        }
+        const ent = new Entity(name, options);
+        this.entities.push(ent);
+        // if (this.eventLoaded === true) {
+        //     // this.entity.eventLoaded(this.addon);
+        //     this.declareEntity();
+        // }
 
-        return entity;
+        return ent;
     }
 
 }

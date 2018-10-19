@@ -1,5 +1,4 @@
 const is = require("@slimio/is");
-const IdentityCard = require("./identityCard.class.js");
 
 /**
  * @class Entity
@@ -34,18 +33,17 @@ class Entity {
         this.name = name;
 
         // this.description : good ternary ?
-        this.description = options.description; /* ? options.description : "N/A"; */
-        this.parent = options.parent; /* ? options.parent : 1; */
+        this.description = options.description ? options.description : "N/A";
+        this.parent = options.parent ? options.parent : 1;
 
-        this.descriptor = new Map();
-        this.entities = new Map();
+        this.descriptors = new Map();
 
         this.id = ++Entity.count;
     }
 
 
     /**
-     * @private
+     * @public
      * @method parent
      * @memberof Entity#
      * @param {!Entity} entity Parent entity
@@ -53,10 +51,10 @@ class Entity {
      * @throws {TypeError}
      * @return {Entity}
      */
-    parent(entity) {
-        if (entity.constructor.name !== "Entity") {
-            throw new TypeError("entity param must be an <Entity> object");
-        }
+    setParent(entity) {
+        // if (entity.constructor.name !== "Entity") {
+        //     throw new TypeError("entity param must be an <Entity> object");
+        // }
         this.parent = entity.id;
 
         return this;
@@ -80,39 +78,9 @@ class Entity {
             throw new TypeError("value param must be a <number> or a <string>");
         }
 
-        this.descriptor.set(key, value);
+        this.descriptors.set(key, value);
 
         return this;
-    }
-
-    /**
-     * @public
-     * @method eventLoaded
-     * @memberof Entity#
-     * @param {Addon} addon addon
-     * @return {void}
-     */
-    eventLoaded(addon) {
-        const data = {
-            name: this.name,
-            description: this.description,
-            descriptor: this.descriptor,
-            parent: this.parent
-        };
-        // console.log(this);
-        addon.sendMessage("events.declare_entity", { args: [data] }).subscribe((id) => {
-            this.id = id;
-            for (const [, entity] of this.entities) {
-                entity.parentId(this.id);
-                entity.eventLoaded(addon);
-            }
-            if (this.identityCards.size() > 0) {
-                for (const [, identityCard] of this.identityCards) {
-                    identityCard.entityId(this.id);
-                    identityCard.eventLoaded(addon);
-                }
-            }
-        });
     }
 
     /**
@@ -121,14 +89,20 @@ class Entity {
      * @return {Object}
      */
     getDataEntity() {
+        // Replace in futur with Object.fromEntries() ?
+        const descriptors = Object.create(null);
+        for (const [key, val] of this.descriptors) {
+            Reflect.set(descriptors, key, val);
+        }
+
         return {
             name: this.name,
             description: this.description,
-            descriptor: this.descriptor,
+            descriptors,
             parent: this.parent
         };
     }
 }
-Entity.count = 0;
+Entity.count = 1;
 
 module.exports = Entity;

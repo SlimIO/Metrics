@@ -28,10 +28,12 @@ class IdentityCard {
 
         this.name = name;
         this.description = options.description;
-        this.unit = options.unit;
+        console.log(options.unit);
+        this.unit = options.unit.symbol;
         this.interval = options.interval;
-        this.max = options.max;
+        this.max = options.unit.max;
         this.entity = options.entity;
+        this.id = ++IdentityCard.count;
     }
 
     /**
@@ -53,22 +55,6 @@ class IdentityCard {
     // }
 
     /**
-     * @public
-     * @method eventLoaded
-     * @memberof IdentityCard#
-     * @param {Addon} addon addon
-     * @return {void}
-     */
-    eventLoaded(addon) {
-        const data = {
-
-        };
-        addon.sendMessage("events.declare_metric_identity", { args: [data] }).subscribe((id) => {
-            this.id = id;
-        });
-    }
-
-    /**
      * @method getDataIdentityCard
      * @memberof IdentityCard#
      * @return {Object}
@@ -84,5 +70,6 @@ class IdentityCard {
         };
     }
 }
+IdentityCard.count = 0;
 
 module.exports = IdentityCard;
