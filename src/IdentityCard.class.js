@@ -28,7 +28,6 @@ class IdentityCard {
 
         this.name = name;
         this.description = options.description;
-        console.log(options.unit);
         this.unit = options.unit.symbol;
         this.interval = options.interval;
         this.max = options.unit.max;

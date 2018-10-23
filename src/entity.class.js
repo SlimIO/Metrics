@@ -26,19 +26,25 @@ class Entity {
             throw new TypeError("options.description param must be a string");
         }
 
-        if (!is.nullOrUndefined(options.parent) && !is.number(options.parent)) {
-            throw new TypeError("options.parent param must be a number");
+        // if (!is.nullOrUndefined(options.parent) && !is.number(options.parent)) {
+        //     throw new TypeError("options.parent param must be a number");
+        // }
+
+        if (!is.nullOrUndefined(options.parent) && !(options.parent instanceof Entity)) {
+            throw new TypeError("options.parent param must be an <Entity> object");
         }
 
         this.name = name;
 
         // this.description : good ternary ?
         this.description = options.description ? options.description : "N/A";
-        this.parent = options.parent ? options.parent : 1;
+        this.parent = options.parent ? options.parent.id : 1;
 
         this.descriptors = new Map();
 
         this.id = ++Entity.count;
+
+        this.dbPushed = false;
     }
 
 
@@ -51,14 +57,14 @@ class Entity {
      * @throws {TypeError}
      * @return {Entity}
      */
-    setParent(entity) {
-        // if (entity.constructor.name !== "Entity") {
-        //     throw new TypeError("entity param must be an <Entity> object");
-        // }
-        this.parent = entity.id;
+    // setParent(entity) {
+    //     if (entity.constructor.name !== "Entity") {
+    //         throw new TypeError("entity param must be an <Entity> object");
+    //     }
+    //     this.parent = entity.id;
 
-        return this;
-    }
+    //     return this;
+    // }
 
     /**
      * @public

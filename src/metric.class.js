@@ -24,7 +24,7 @@ class Metric {
         this.identityCards = [];
 
         this.addon.on("addonLoaded", (addonName) => {
-            console.log(`AddonLoaded : ${addonName}`);
+            // console.log(`AddonLoaded : ${addonName}`);
             if (addonName === "events") {
                 this.eventLoaded = true;
                 if (this.entities.length > 0) {
@@ -73,6 +73,7 @@ class Metric {
             for (const entity of this.entities) {
                 if (entity.id === entityIds[i]) {
                     entity.id = promisesIds[i];
+                    entity.dbPushed = true;
                 }
                 if (entity.parent === entityIds[i]) {
                     entity.parent = promisesIds[i];
@@ -128,8 +129,9 @@ class Metric {
         const identityCard = new IdentityCard(name, options);
         this.identityCards.push(identityCard);
         if (this.eventLoaded === true) {
-            // this.entity.eventLoaded(this.addon);
-            this.declareEntity();
+            if (Reflect.has(options, "entity") && options.entity.dbPushed === true) {
+                this.declareIdentityCard();
+            }
         }
 
         return this;
@@ -144,10 +146,11 @@ class Metric {
     entity(name, options) {
         const ent = new Entity(name, options);
         this.entities.push(ent);
-        // if (this.eventLoaded === true) {
-        //     // this.entity.eventLoaded(this.addon);
-        //     this.declareEntity();
-        // }
+        if (this.eventLoaded === true) {
+            if (Reflect.has(options, "parent") && options.parent.dbPushed === true) {
+                this.declareEntity(ent.parent);
+            }
+        }
 
         return ent;
     }
