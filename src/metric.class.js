@@ -1,6 +1,6 @@
-const is = require("@slimio/is");
+// Require Internal Dependencies
 const Entity = require("./entity.class.js");
-const IdentityCard = require("./identityCard.class.js");
+const MetricIdentityCard = require("./metricIdentityCard.class.js");
 
 /**
  * @class Metric
@@ -12,6 +12,8 @@ class Metric {
     /**
      * @constructor
      * @param {Addon} addon Addon
+     *
+     * @throws {TypeError}
      */
     constructor(addon) {
         if (addon.constructor.name !== "Addon") {
@@ -20,11 +22,14 @@ class Metric {
 
         this.eventLoaded = false;
         this.addon = addon;
+
+        /** @type {Array<Entity>} */
         this.entities = [];
-        this.identityCards = [];
+
+        /** @type {Array<MetricIdentityCard>} */
+        this.mic = [];
 
         this.addon.on("addonLoaded", (addonName) => {
-            // console.log(`AddonLoaded : ${addonName}`);
             if (addonName === "events") {
                 this.eventLoaded = true;
                 if (this.entities.length > 0) {
@@ -55,7 +60,6 @@ class Metric {
      * @return {Promise<void>}
      */
     async declareEntity(parentIndex = 1) {
-
         const promises = [];
         const entityIds = [];
 
@@ -66,6 +70,7 @@ class Metric {
                 promises.push(this.sendMessage("events.declare_entity", data));
             }
         }
+
         const promisesIds = await Promise.all(promises);
         for (let i = 0; i < entityIds.length; i++) {
             // Get db id to entities published and link parentId
@@ -79,6 +84,7 @@ class Metric {
                     entity.parent = promisesIds[i];
                 }
             }
+
             this.declareIdentityCard(promisesIds);
             this.declareEntity(promisesIds[i]);
         }
@@ -94,7 +100,7 @@ class Metric {
     async declareIdentityCard(entityId) {
         const promisesIdentityCard = [];
 
-        const identityCards = this.identityCards.filter((ic) => {
+        const identityCards = this.mic.filter((ic) => {
             for (const entId of entityId) {
                 if (entId === ic.entity.id) {
                     return true;
@@ -107,7 +113,7 @@ class Metric {
         const identityCardPubliched = [];
 
         for (const identityCard of identityCards) {
-            const data = identityCard.getDataIdentityCard();
+            const data = identityCard.toJSON();
             promisesIdentityCard.push(this.sendMessage("events.declare_mic", data));
             identityCardPubliched.push(identityCard);
         }
@@ -123,18 +129,18 @@ class Metric {
      * @method identityCard
      * @param {String} name Entity name
      * @param {Object} options Entity options
-     * @return {Metric}
+     * @return {MetricIdentityCard}
      */
     identityCard(name, options) {
-        const identityCard = new IdentityCard(name, options);
-        this.identityCards.push(identityCard);
+        const identityCard = new MetricIdentityCard(name, options);
+        this.mic.push(identityCard);
         if (this.eventLoaded === true) {
             if (Reflect.has(options, "entity") && options.entity.dbPushed === true) {
                 this.declareIdentityCard();
             }
         }
 
-        return this;
+        return identityCard;
     }
 
     /**

@@ -1,9 +1,10 @@
 const is = require("@slimio/is");
 
 /**
- * @class IdentityCard
+ * @class MetricIdentityCard
  */
-class IdentityCard {
+class MetricIdentityCard {
+
     /**
      * @constructor
      * @param {String} name name
@@ -32,33 +33,15 @@ class IdentityCard {
         this.interval = options.interval;
         this.max = options.unit.max;
         this.entity = options.entity;
-        this.id = ++IdentityCard.count;
+        this.id = ++MetricIdentityCard.count;
     }
 
     /**
-     * @public
-     * @method entityId
-     * @memberof IdentityCard#
-     * @param {Number} id Entity id
-     *
-     * @throws {TypeError}
-     * @return {IdentityCard}
-     */
-    // entityId(id) {
-    //     if (!is.number(id)) {
-    //         throw new TypeError("id param must be a <number>");
-    //     }
-    //     this.entityId = id;
-
-    //     return this;
-    // }
-
-    /**
-     * @method getDataIdentityCard
+     * @method toJSON
      * @memberof IdentityCard#
      * @return {Object}
      */
-    getDataIdentityCard() {
+    toJSON() {
         return {
             name: this.name,
             description: this.description,
@@ -69,6 +52,7 @@ class IdentityCard {
         };
     }
 }
-IdentityCard.count = 0;
 
-module.exports = IdentityCard;
+MetricIdentityCard.count = 0;
+
+module.exports = MetricIdentityCard;
