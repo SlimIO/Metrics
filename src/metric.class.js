@@ -65,7 +65,7 @@ class Metric {
 
         for (const entity of this.entities) {
             if (entity.parent === parentIndex) {
-                const data = entity.getDataEntity();
+                const data = entity.toJSON();
                 entityIds.push(entity.id);
                 promises.push(this.sendMessage("events.declare_entity", data));
             }

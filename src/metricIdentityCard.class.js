@@ -27,7 +27,7 @@ class MetricIdentityCard {
             throw new TypeError("options.entity param must be an <Entity> object");
         }
 
-        this.name = name;
+        this.name = `${options.entity.name}_${name}`;
         this.description = options.description;
         this.unit = options.unit.symbol;
         this.interval = options.interval;

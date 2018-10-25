@@ -1,5 +1,5 @@
 # SlimIO Metrics
-NodeJS Javascript Metrics
+This package provide a developer interface to interact with Event Addon to automatically publish Metrics in local database without managing the asynchronous nature of the product.
 
 ## Getting Started
 
