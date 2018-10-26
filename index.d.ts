@@ -5,7 +5,7 @@ declare namespace Metrics {
 
     interface EntityOption {
         description: string;
-        parent: number;
+        parent: Entity;
     }
 
     interface EntityJSON {
@@ -28,7 +28,7 @@ declare namespace Metrics {
         public dbPushed: boolean;
 
         toJSON(): EntityJSON;
-        set(key: string, value: number): Entity;
+        set(key: string, value: number|string): Entity;
     }
 
     interface IdentityCardOption {

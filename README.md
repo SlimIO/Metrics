@@ -11,9 +11,129 @@ $ npm i @slimio/metrics
 $ yarn add @slimio/metrics
 ```
 
+## Usage exemple
+A script that demonstrate how to publish `Entity` and `IdentityCard`
+
+```js
+// NodeJS Dependencies
+const os = require("os");
+
+// SlimIO Dependencies
+const Unit = require("@slimio/units");
+const Metrics = require("./Metrics");
+const Addon = require("@slimio/addon");
+
+const CPU = new Addon("CPU");
+const metric = new Metrics(CPU);
+
+CPU.on("start", () => {
+    console.log("[CPU] Start event triggered!");
+    const entity = metric.entity("CPU", {
+        description: "Central Processing Unit"
+    });
+
+    const cpus = os.cpus();
+    for (let id = 0; id < cpus.length; id++) {
+        const childCPU = metric.entity(
+            `CPU.${id}`, 
+            { parent: entity}
+        ).set("speed", cpus[id].speed)
+        .set("model", cpus[id].model);
+
+        const cardConfig = { unit: Unit.Pourcent, entity: childCPU };
+        metric.identityCard("USER", cardConfig);
+        metric.identityCard("NICE", cardConfig);
+        metric.identityCard("SYS", cardConfig);
+        metric.identityCard("IDLE", cardConfig);
+        metric.identityCard("IRQ", cardConfig);
+    }
+});
+
+// Export addon
+module.exports = CPU;
+```
 ## API
 
+### metric.entity(name: string, options: EntityOption): Entity
+Publish entity in local db
+
+```js
+const Metrics = require("./Metrics");
+const Addon = require("@slimio/addon");
+
+const CPU = new Addon("CPU");
+const metric = new Metrics(CPU);
+
+CPU.on("start", () => {
+    const entity = metric.entity("CPU", {
+        description: "Central Processing Unit"
+    });
+    const childCPU = metric.entity(
+        `CPU.${id}`, 
+        { parent: entity}
+    )
+}
+```
+
+Entity options interface
+```typescript
+interface EntityOption {
+    description: string;
+    parent: Entity;
+}
+```
+### Entity.set(key: string, value: number|string): Entity
+Publish entity descriptor
+```js
+const Metrics = require("./Metrics");
+const Addon = require("@slimio/addon");
+
+const CPU = new Addon("CPU");
+const metric = new Metrics(CPU);
+
+CPU.on("start", () => {
+    metric.entity(
+        "CPU",
+        { description: "Central Processing Unit" }
+    ).set("speed", cpus[id].speed)
+    .set("model", cpus[id].model);
+
+}
+```
+
+### metric.identityCard(name: string, options: IdentityCardOption): IdentityCard
+Publish identityCard in local db
+```js
+const Unit = require("@slimio/units");
+const Metrics = require("./Metrics");
+const Addon = require("@slimio/addon");
+
+const CPU = new Addon("CPU");
+const metric = new Metrics(CPU);
+
+CPU.on("start", () => {
+    const entity = metric.entity("CPU", {
+        description: "Central Processing Unit"
+    });
+    const cardConfig = { unit: Unit.Pourcent, entity };
+    metric.identityCard("USER", cardConfig);
+}
+```
+
+IdentityCard options interface
+```typescript
+interface IdentityCardOption {
+    unit: Units;
+    entity: Entity;
+}
+```
 
 ## Licence
 
 MIT
+
+## TODO
+
+- [x] Write d.ts
+- [ ] Test offset async publish Entity and IdentityCard
+- [ ] Publish metrics
