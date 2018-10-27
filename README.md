@@ -19,8 +19,8 @@ A script that demonstrate how to publish `Entity` and `IdentityCard`
 const os = require("os");
 
 // SlimIO Dependencies
-const Unit = require("@slimio/units");
-const Metrics = require("./Metrics");
+const { Pourcent } = require("@slimio/units");
+const Metrics = require("@slimio/metrics");
 const Addon = require("@slimio/addon");
 
 const CPU = new Addon("CPU");
@@ -28,24 +28,22 @@ const metric = new Metrics(CPU);
 
 CPU.on("start", () => {
     console.log("[CPU] Start event triggered!");
-    const entity = metric.entity("CPU", {
+    const cpuEntity = metric.entity("CPU", {
         description: "Central Processing Unit"
     });
 
     const cpus = os.cpus();
     for (let id = 0; id < cpus.length; id++) {
-        const childCPU = metric.entity(
-            `CPU.${id}`, 
-            { parent: entity}
-        ).set("speed", cpus[id].speed)
-        .set("model", cpus[id].model);
+        const entity = metric.entity(`CPU.${id}`, { parent: cpuEntity })
+            .set("speed", cpus[id].speed)
+            .set("model", cpus[id].model);
 
-        const cardConfig = { unit: Unit.Pourcent, entity: childCPU };
-        metric.identityCard("USER", cardConfig);
-        metric.identityCard("NICE", cardConfig);
-        metric.identityCard("SYS", cardConfig);
-        metric.identityCard("IDLE", cardConfig);
-        metric.identityCard("IRQ", cardConfig);
+        const micConfig = { unit: Pourcent, entity };
+        metric.identityCard("USER", micConfig);
+        metric.identityCard("NICE", micConfig);
+        metric.identityCard("SYS", micConfig);
+        metric.identityCard("IDLE", micConfig);
+        metric.identityCard("IRQ", micConfig);
     }
 });
 
@@ -58,20 +56,17 @@ module.exports = CPU;
 Publish entity in local db
 
 ```js
-const Metrics = require("./Metrics");
+const Metrics = require("@slimio/metrics");
 const Addon = require("@slimio/addon");
 
 const CPU = new Addon("CPU");
 const metric = new Metrics(CPU);
 
 CPU.on("start", () => {
-    const entity = metric.entity("CPU", {
+    const cpuEntity = metric.entity("CPU", {
         description: "Central Processing Unit"
     });
-    const childCPU = metric.entity(
-        `CPU.${id}`, 
-        { parent: entity}
-    )
+    const childCPU = metric.entity(`CPU.1`, { parent: cpuEntity });
 }
 ```
 
@@ -82,6 +77,7 @@ interface EntityOption {
     parent: Entity;
 }
 ```
+
 ### Entity.set(key: string, value: number|string): Entity
 Publish entity descriptor
 ```js
@@ -92,12 +88,11 @@ const CPU = new Addon("CPU");
 const metric = new Metrics(CPU);
 
 CPU.on("start", () => {
-    metric.entity(
-        "CPU",
-        { description: "Central Processing Unit" }
-    ).set("speed", cpus[id].speed)
-    .set("model", cpus[id].model);
-
+    metric.entity("CPU", {
+        description: "Central Processing Unit"
+    })
+        .set("speed", cpus[id].speed)
+        .set("model", cpus[id].model);
 }
 ```
 
