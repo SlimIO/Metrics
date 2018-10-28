@@ -9,6 +9,10 @@ class MetricIdentityCard {
      * @constructor
      * @param {String} name name
      * @param {Object} options options
+     * @param {String} options.description options description
+     * @param {Unit} options.unit options max value of Unit
+     * @param {Number} options.max options max value of Unit
+     *
      * @throws {TypeError}
      */
     constructor(name, options) {

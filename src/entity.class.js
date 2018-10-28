@@ -13,6 +13,8 @@ class Entity {
      * @constructor
      * @param {!String} name Entity name
      * @param {Object} options option
+     * @param {String} options.description option description
+     * @param {Number} options.parent option entity parent id
      *
      * @throws {TypeError}
      */

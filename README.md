@@ -73,8 +73,8 @@ CPU.on("start", () => {
 Entity options interface
 ```typescript
 interface EntityOption {
-    description: string;
-    parent: Entity;
+    description?: string;
+    parent?: Entity;
 }
 ```
 
@@ -120,6 +120,9 @@ IdentityCard options interface
 interface IdentityCardOption {
     unit: Units;
     entity: Entity;
+    description?: string;
+    max?: number;
+    interval?: number;
 }
 ```
 
