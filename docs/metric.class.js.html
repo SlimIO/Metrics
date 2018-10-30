@@ -1,17 +1,58 @@
-// Require Internal Dependencies
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>metric.class.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Entity.html">Entity</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Entity.html#set">set</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Entity.html#toJSON">toJSON</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Metric.html">Metric</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Metric.html#sendMessage">sendMessage</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="MetricIdentityCard.html">MetricIdentityCard</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#entity">entity</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#identityCard">identityCard</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">metric.class.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Require Internal Dependencies
 const Entity = require("./entity.class.js");
 const MetricIdentityCard = require("./metricIdentityCard.class.js");
 
 /**
  * @class Metric
  * @property {Addon} addon Addon
+ * @property {Entity} entity Entity
  * @property {Boolean=} [eventLoaded=false] Event addon is loaded ?
  */
 class Metric {
-
     /**
      * @constructor
-     * @param {!Addon} addon Addon
+     * @param {Addon} addon Addon
      *
      * @throws {TypeError}
      */
@@ -23,13 +64,13 @@ class Metric {
         this.eventLoaded = false;
         this.addon = addon;
 
-        /** @type {Array<Entity>} */
+        /** @type {Array&lt;Entity>} */
         this.entities = [];
 
-        /** @type {Map<String, MetricIdentityCard>} */
+        /** @type {Map&lt;String, MetricIdentityCard>} */
         this.mic = new Map();
 
-        /** @type {Map<Entity.id, entities.index|MetricIdentityCard.name>} */
+        /** @type {Map&lt;Entity.id, Entity.parent|MetricIdentityCard.name>} */
         this.linker = new Map();
 
         this.addon.on("addonLoaded", (addonName) => {
@@ -43,14 +84,11 @@ class Metric {
     }
 
     /**
-     * @async
-     * @private
      * @method sendMessage
      * @memberof Metric#
-     * @param {!String} event event
-     * @param {!Object} data data
-     *
-     * @return {Promise<Number>}
+     * @param {String} event event
+     * @param {Object} data data
+     * @return {Promise&lt;number>}
      */
     sendMessage(event, data) {
         return new Promise((resolve) => {
@@ -63,7 +101,7 @@ class Metric {
      * @async
      * @method declare
      * @memberof Metric#
-     * @param {Number=} [parentIndex=1] parentIndex
+     * @param {Number} parentIndex parentIndex
      *
      * @returns {void}
      */
@@ -91,13 +129,11 @@ class Metric {
     }
 
     /**
-     * @async
      * @private
      * @method declareEntity
      * @memberof Metric#
-     * @param {!Entity} entity entity
-     *
-     * @return {Promise<Number>}
+     * @param {Entity} entity entity
+     * @return {Promise&lt;Number>}
      */
     async declareEntity(entity) {
         const data = entity.toJSON();
@@ -128,13 +164,11 @@ class Metric {
     }
 
     /**
-     * @async
      * @private
      * @method declareIdentityCard
      * @memberof Metric#
-     * @param {!MetricIdentityCard} mic mic
-     *
-     * @return {Promise<void>};
+     * @param  {MetricIdentityCard} mic mic
+     * @return {Promise&lt;void>};
      */
     async declareIdentityCard(mic) {
         const data = mic.toJSON();
@@ -145,12 +179,9 @@ class Metric {
 
 
     /**
-     * @public
      * @method identityCard
-     * @memberof Metric#
-     * @param {!String} name Entity name
+     * @param {String} name Entity name
      * @param {Object} options Entity options
-     *
      * @return {MetricIdentityCard}
      */
     identityCard(name, options) {
@@ -158,7 +189,7 @@ class Metric {
         this.mic.set(identityCard.name, identityCard);
         this.setLinker(identityCard.entityId, identityCard.name);
         // if (this.eventLoaded === true) {
-        //     if (Reflect.has(options, "entity") && options.entity.dbPushed === true) {
+        //     if (Reflect.has(options, "entity") &amp;&amp; options.entity.dbPushed === true) {
         //         this.declareIdentityCard();
         //     }
         // }
@@ -167,12 +198,9 @@ class Metric {
     }
 
     /**
-     * @public
      * @method entity
-     * @memberof Metric#
-     * @param {!String} name Entity name
+     * @param {String} name Entity name
      * @param {Object} options Entity options
-     *
      * @return {Entity}
      */
     entity(name, options) {
@@ -182,7 +210,7 @@ class Metric {
         this.setLinker(ent.parent, index - 1);
 
         if (this.eventLoaded === true) {
-            if (Reflect.has(options, "parent") && options.parent.dbPushed === true) {
+            if (Reflect.has(options, "parent") &amp;&amp; options.parent.dbPushed === true) {
                 this.declareEntity(ent.parent);
             }
         }
@@ -194,8 +222,8 @@ class Metric {
      * @private
      * @method setLinker
      * @memberof Metric#
-     * @param {!Number} parent parent
-     * @param {!Number|String} value value
+     * @param {Number} parent parent
+     * @param {Number|String} value value
      *
      * @returns {void}
      */
@@ -211,3 +239,22 @@ class Metric {
 }
 
 module.exports = Metric;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Oct 30 2018 19:44:21 GMT+0100 (GMT+01:00) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

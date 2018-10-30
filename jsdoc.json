@@ -1,0 +1,22 @@
+{
+    "opts": {
+        "encoding": "utf8",
+        "destination": "./docs/",
+        "recurse": true,
+        "template": "node_modules/@escommunity/minami"
+    },
+    "source": {
+        "include": [
+            "index.js",
+            "src/metric.class.js",
+            "src/entity.class.js",
+            "src/metricIdentityCard.class.js"
+        ],
+        "exclude": [
+            "node_modules",
+            "client"
+        ],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    }
+}

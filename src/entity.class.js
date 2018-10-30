@@ -4,8 +4,10 @@ const is = require("@slimio/is");
  * @class Entity
  * @property {String} name Entity name
  * @property {String} description Entity description
- * @property {Number=} [parent=0] Parent Entity number
+ * @property {Number=} [parent=1] Parent Entity number
  * @property {Addon} addon Addon attach to listen addon event
+ * @property {Number} id id
+ * @property {Boolean} dbPushed db controller
  */
 class Entity {
 
@@ -34,7 +36,10 @@ class Entity {
         this.name = name;
         this.description = options.description ? options.description : "N/A";
         this.parent = options.parent ? options.parent.id : 1;
+
+        /** @type {Map<String, Number|String>} */
         this.descriptors = new Map();
+
         this.id = ++Entity.count;
         this.dbPushed = false;
     }

@@ -23,7 +23,7 @@ declare namespace Metrics {
         public name: string;
         public description: string;
         public parent: number;
-        public descriptors: Map<string, string>;
+        public descriptors: Map<string, string|number>;
         public id: number;
         public dbPushed: boolean;
 
@@ -41,7 +41,7 @@ declare namespace Metrics {
 
     interface IdentityCardJSON {
         public description: string;
-        public unit: Units;
+        public unit: number;
         public entityId: number;
         public max: number;
         public interval: number;
@@ -53,9 +53,11 @@ declare namespace Metrics {
         public name: string;
         public description: string;
         public unit: Units;
-        public entity: Entity;
-        public max: number;
         public interval: number;
+        public max: number;
+        public entity: Entity;
+        public id: number;
+        public dbPushed: boolean;
 
         toJSON(): IdentityCardJSON;
     }

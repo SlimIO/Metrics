@@ -2,18 +2,27 @@ const is = require("@slimio/is");
 
 /**
  * @class MetricIdentityCard
+ * @property {String} name MetricIdentityCard name
+ * @property {String} description MetricIdentityCard description
+ * @property {Unit} unit Unit
+ * @property {Number} interval interval
+ * @property {Number} max max
+ * @property {Entity} entity entity
+ * @property {Number} id id
+ * @property {Boolean} dbPushed Db controller
  */
 class MetricIdentityCard {
 
     /**
      * @constructor
-     * @param {String} name name
-     * @param {Object} options options
+     * @param {!String} name name
+     * @param {!Object} options options
      * @param {String} options.description options description
-     * @param {Unit} options.unit options max value of Unit
-     * @param {Number} options.max options max value of Unit
+     * @param {!Unit} options.unit options Unit
+     * @param {!Entity} options.entity options Entity
      *
      * @throws {TypeError}
+     * @throws {Error}
      */
     constructor(name, options) {
         if (!is.string(name)) {
@@ -33,11 +42,10 @@ class MetricIdentityCard {
 
         this.name = `${options.entity.name}_${name}`;
         this.description = options.description;
-        this.unit = options.unit.symbol;
+        this.unit = options.unit;
         this.interval = options.interval;
         this.max = options.unit.max;
-        // this.entity = options.entity;
-        this.entityId = options.entity.id;
+        this.entity = options.entity;
         this.id = ++MetricIdentityCard.count;
         this.dbPushed = false;
     }
@@ -45,16 +53,17 @@ class MetricIdentityCard {
     /**
      * @method toJSON
      * @memberof IdentityCard#
+     *
      * @return {Object}
      */
     toJSON() {
         return {
             name: this.name,
             description: this.description,
-            unit: this.unit,
+            unit: this.unit.symbol,
             interval: this.interval,
             max: this.max,
-            entityId: this.entityId
+            entityId: this.entity.id
         };
     }
 }
