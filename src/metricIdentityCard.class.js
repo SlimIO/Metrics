@@ -36,8 +36,10 @@ class MetricIdentityCard {
         this.unit = options.unit.symbol;
         this.interval = options.interval;
         this.max = options.unit.max;
-        this.entity = options.entity;
+        // this.entity = options.entity;
+        this.entityId = options.entity.id;
         this.id = ++MetricIdentityCard.count;
+        this.dbPushed = false;
     }
 
     /**
@@ -52,7 +54,7 @@ class MetricIdentityCard {
             unit: this.unit,
             interval: this.interval,
             max: this.max,
-            entityId: this.entity.id
+            entityId: this.entityId
         };
     }
 }

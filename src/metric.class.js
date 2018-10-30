@@ -26,14 +26,17 @@ class Metric {
         /** @type {Array<Entity>} */
         this.entities = [];
 
-        /** @type {Array<MetricIdentityCard>} */
-        this.mic = [];
+        /** @type {Map<String, MetricIdentityCard>} */
+        this.mic = new Map();
+
+        /** @type {Map<Entity.id, Entity.parent|MetricIdentityCard.name>} */
+        this.linker = new Map();
 
         this.addon.on("addonLoaded", (addonName) => {
             if (addonName === "events") {
                 this.eventLoaded = true;
                 if (this.entities.length > 0) {
-                    this.declareEntity();
+                    this.declare();
                 }
             }
         });
@@ -54,74 +57,83 @@ class Metric {
 
     /**
      * @private
-     * @method declareEntity
+     * @async
+     * @method declare
      * @memberof Metric#
      * @param {Number} parentIndex parentIndex
-     * @return {Promise<void>}
+     *
+     * @returns {void}
      */
-    async declareEntity(parentIndex = 1) {
+    async declare(parentIndex = 1) {
+        if (!this.linker.has(parentIndex)) {
+            return;
+        }
         const promises = [];
-        const entityIds = [];
-
-        for (const entity of this.entities) {
-            if (entity.parent === parentIndex) {
-                const data = entity.toJSON();
-                entityIds.push(entity.id);
-                promises.push(this.sendMessage("events.declare_entity", data));
+        const elems = this.linker.get(parentIndex);
+        for (const elem of elems) {
+            if (typeof elem === "number") {
+                const entity = this.entities[elem];
+                promises.push(this.declareEntity(entity));
+            }
+            else {
+                const mic = this.mic.get(elem);
+                this.declareIdentityCard(mic);
             }
         }
 
-        const promisesIds = await Promise.all(promises);
-        for (let i = 0; i < entityIds.length; i++) {
-            // Get db id to entities published and link parentId
+        const declareIds = await Promise.all(promises);
+        for (const id of declareIds) {
+            this.declare(id);
+        }
+    }
 
-            for (const entity of this.entities) {
-                if (entity.id === entityIds[i]) {
-                    entity.id = promisesIds[i];
-                    entity.dbPushed = true;
+    /**
+     * @private
+     * @method declareEntity
+     * @memberof Metric#
+     * @param {Entity} entity entity
+     * @return {Promise<Number>}
+     */
+    async declareEntity(entity) {
+        const data = entity.toJSON();
+        const oldId = entity.id;
+        const newId = await this.sendMessage("events.declare_entity", data)
+
+        entity.id = newId;
+        entity.dbPushed = true;
+
+        // Reset all Ids after pushed in DB
+        if (this.linker.has(oldId)) {
+            const elems = this.linker.get(oldId);
+            this.linker.delete(oldId);
+            this.linker.set(newId, elems);
+
+            for (const elem of elems) {
+                if (typeof elem === "number") {
+                    this.entities[elem].parent = newId;
                 }
-                if (entity.parent === entityIds[i]) {
-                    entity.parent = promisesIds[i];
+                else {
+                    const mic = this.mic.get(elem);
+                    mic.entityId = newId;
                 }
             }
-
-            this.declareIdentityCard(promisesIds);
-            this.declareEntity(promisesIds[i]);
         }
+
+        return newId;
     }
 
     /**
      * @private
      * @method declareIdentityCard
      * @memberof Metric#
-     * @param  {Array<Number>} entityId entityId
+     * @param  {MetricIdentityCard} mic mic
      * @return {Promise<void>};
      */
-    async declareIdentityCard(entityId) {
-        const promisesIdentityCard = [];
-
-        const identityCards = this.mic.filter((ic) => {
-            for (const entId of entityId) {
-                if (entId === ic.entity.id) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
-
-        const identityCardPubliched = [];
-
-        for (const identityCard of identityCards) {
-            const data = identityCard.toJSON();
-            promisesIdentityCard.push(this.sendMessage("events.declare_mic", data));
-            identityCardPubliched.push(identityCard);
-        }
-
-        const IdentityCardIds = await Promise.all(promisesIdentityCard);
-        for (let i = 0; i < identityCards.length; i++) {
-            identityCards[i].id = IdentityCardIds[i];
-        }
+    async declareIdentityCard(mic) {
+        const data = mic.toJSON();
+        const newId = await this.sendMessage("events.declare_mic", data);
+        mic.id = newId;
+        mic.dbPushed = true;
     }
 
 
@@ -133,12 +145,13 @@ class Metric {
      */
     identityCard(name, options) {
         const identityCard = new MetricIdentityCard(name, options);
-        this.mic.push(identityCard);
-        if (this.eventLoaded === true) {
-            if (Reflect.has(options, "entity") && options.entity.dbPushed === true) {
-                this.declareIdentityCard();
-            }
-        }
+        this.mic.set(identityCard.name, identityCard);
+        this.setLinker(identityCard.entityId, identityCard.name);
+        // if (this.eventLoaded === true) {
+        //     if (Reflect.has(options, "entity") && options.entity.dbPushed === true) {
+        //         this.declareIdentityCard();
+        //     }
+        // }
 
         return identityCard;
     }
@@ -151,7 +164,10 @@ class Metric {
      */
     entity(name, options) {
         const ent = new Entity(name, options);
-        this.entities.push(ent);
+        const index = this.entities.push(ent);
+
+        this.setLinker(ent.parent, index - 1);
+
         if (this.eventLoaded === true) {
             if (Reflect.has(options, "parent") && options.parent.dbPushed === true) {
                 this.declareEntity(ent.parent);
@@ -159,6 +175,24 @@ class Metric {
         }
 
         return ent;
+    }
+
+    /**
+     * @private
+     * @method setLinker
+     * @memberof Metric#
+     * @param {Number} parent parent
+     * @param {Number|String} value value
+     *
+     * @returns {void}
+     */
+    setLinker(parent, value) {
+        if (!this.linker.has(parent)) {
+            this.linker.set(parent, [value]);
+        }
+        else {
+            this.linker.get(parent).push(value);
+        }
     }
 
 }
