@@ -1,6 +1,7 @@
 // Require Internal Dependencies
 const Entity = require("./entity.class.js");
 const MetricIdentityCard = require("./metricIdentityCard.class.js");
+const is = require("@slimio/is");
 
 /**
  * @class Metric
@@ -32,29 +33,16 @@ class Metric {
         /** @type {Map<Entity.id, entities.index|MetricIdentityCard.name>} */
         this.linker = new Map();
 
+        this.publishMetrics = new Map();
+
         this.addon.on("addonLoaded", (addonName) => {
             if (addonName === "events") {
+                console.log(`AddonLoaded : ${addonName}`);
                 this.eventLoaded = true;
                 if (this.entities.length > 0) {
                     this.declare();
                 }
             }
-        });
-    }
-
-    /**
-     * @async
-     * @private
-     * @method sendMessage
-     * @memberof Metric#
-     * @param {!String} event event
-     * @param {!Object} data data
-     *
-     * @return {Promise<Number>}
-     */
-    sendMessage(event, data) {
-        return new Promise((resolve) => {
-            this.addon.sendMessage(event, { args: [data] }).subscribe(resolve);
         });
     }
 
@@ -102,7 +90,7 @@ class Metric {
     async declareEntity(entity) {
         const data = entity.toJSON();
         const oldId = entity.id;
-        const newId = await this.sendMessage("events.declare_entity", data)
+        const newId = await this.sendMessage("events.declare_entity", data);
 
         entity.id = newId;
         entity.dbPushed = true;
@@ -141,8 +129,49 @@ class Metric {
         const newId = await this.sendMessage("events.declare_mic", data);
         mic.id = newId;
         mic.dbPushed = true;
+
+        if (this.publishMetrics.has(data.name)) {
+            const metrics = this.publishMetrics.get(data.name);
+            for (const { micId, value, harvestedAt } of metrics) {
+                this.addon.sendMessage("events.publish_metric", { args: [micId, value, harvestedAt] });
+            }
+        }
+
     }
 
+    /**
+     * @async
+     * @private
+     * @method sendMessage
+     * @memberof Metric#
+     * @param {!String} event event
+     * @param {!Object} data data
+     *
+     * @return {Promise<Number>}
+     */
+    sendMessage(event, ...data) {
+        return new Promise((resolve) => {
+            this.addon.sendMessage(event, { args: data }).subscribe(resolve);
+        });
+    }
+
+    /**
+     * @private
+     * @method setLinker
+     * @memberof Metric#
+     * @param {!Number} parent parent
+     * @param {!Number|String} value value
+     *
+     * @returns {void}
+     */
+    setLinker(parent, value) {
+        if (!this.linker.has(parent)) {
+            this.linker.set(parent, [value]);
+        }
+        else {
+            this.linker.get(parent).push(value);
+        }
+    }
 
     /**
      * @public
@@ -156,7 +185,7 @@ class Metric {
     identityCard(name, options) {
         const identityCard = new MetricIdentityCard(name, options);
         this.mic.set(identityCard.name, identityCard);
-        this.setLinker(identityCard.entityId, identityCard.name);
+        this.setLinker(identityCard.entity.id, identityCard.name);
         // if (this.eventLoaded === true) {
         //     if (Reflect.has(options, "entity") && options.entity.dbPushed === true) {
         //         this.declareIdentityCard();
@@ -191,23 +220,41 @@ class Metric {
     }
 
     /**
-     * @private
-     * @method setLinker
+     * @public
      * @memberof Metric#
-     * @param {!Number} parent parent
-     * @param {!Number|String} value value
+     * @param {String} name name
+     * @param {Number} value value
      *
-     * @returns {void}
+     * @throws {TypeError}
+     * @throws {Error}
+     * @return {void}
      */
-    setLinker(parent, value) {
-        if (!this.linker.has(parent)) {
-            this.linker.set(parent, [value]);
+    publish(name, value, harvestedAt=Date.now()) {
+        if (!is.string(name)) {
+            throw new TypeError("name param must a <string> type");
+        }
+        if (!is.number(value)) {
+            throw new TypeError("value param must a <number>");
+        }
+        if (!this.mic.has(name)) {
+            throw new Error(`There is no IdentityCard with name : ${name}`);
+        }
+
+        const mic = this.mic.get(name);
+        if (!this.eventLoaded || this.eventLoaded && !mic.dbPushed) {
+            if (!this.publishMetrics.has(name)) {
+                this.publishMetrics.set(name, [{ micId: mic.id, value, harvestedAt }]);
+            }
+            else {
+                const micArr = this.publishMetrics.get(name);
+                micArr.push({ micId: mic.id, value, harvestedAt });
+                this.publishMetrics.set(name, micArr);
+            }
         }
         else {
-            this.linker.get(parent).push(value);
+            this.addon.sendMessage("events.publish_metric", { args: [mic.id, value, harvestedAt] });
         }
     }
-
 }
 
 module.exports = Metric;
