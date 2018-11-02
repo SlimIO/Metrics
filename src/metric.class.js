@@ -1,7 +1,9 @@
+// Require Third-Party Dependencies
+const is = require("@slimio/is");
+
 // Require Internal Dependencies
 const Entity = require("./entity.class.js");
 const MetricIdentityCard = require("./metricIdentityCard.class.js");
-const is = require("@slimio/is");
 
 /**
  * @class Metric
@@ -73,8 +75,9 @@ class Metric {
             }
         }
 
-        const declareIds = await Promise.all(promises);
-        for (const id of declareIds) {
+        const oldIds = await Promise.all(promises);
+        this.linker.delete(parentIndex);
+        for (const id of oldIds) {
             this.declare(id);
         }
     }
@@ -99,8 +102,6 @@ class Metric {
         // Reset all Ids after pushed in DB
         if (this.linker.has(oldId)) {
             const elems = this.linker.get(oldId);
-            this.linker.delete(oldId);
-            this.linker.set(newId, elems);
 
             for (const elem of elems) {
                 if (typeof elem === "number") {
@@ -113,7 +114,7 @@ class Metric {
             }
         }
 
-        return newId;
+        return oldId;
     }
 
     /**
@@ -186,12 +187,15 @@ class Metric {
     identityCard(name, options) {
         const identityCard = new MetricIdentityCard(name, options);
         this.mic.set(identityCard.name, identityCard);
+
+        if (this.eventLoaded === true) {
+            if (options.entity.dbPushed === true) {
+                this.declareIdentityCard(identityCard);
+
+                return identityCard;
+            }
+        }
         this.setLinker(identityCard.entity.id, identityCard.name);
-        // if (this.eventLoaded === true) {
-        //     if (Reflect.has(options, "entity") && options.entity.dbPushed === true) {
-        //         this.declareIdentityCard();
-        //     }
-        // }
 
         return identityCard;
     }
@@ -209,13 +213,16 @@ class Metric {
         const ent = new Entity(name, options);
         const index = this.entities.push(ent);
 
-        this.setLinker(ent.parent, index - 1);
 
         if (this.eventLoaded === true) {
             if (Reflect.has(options, "parent") && options.parent.dbPushed === true) {
-                this.declareEntity(ent.parent);
+                this.declareEntity(ent);
+
+                return ent;
             }
         }
+
+        this.setLinker(ent.parent, index - 1);
 
         return ent;
     }
