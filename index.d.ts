@@ -1,6 +1,8 @@
 /// <reference types="node" />
 /// <reference types="@types/es6-shim" />
 
+import { AddressInfo } from "net";
+
 declare namespace Metrics {
 
     interface EntityOption {
@@ -60,6 +62,28 @@ declare namespace Metrics {
         public dbPushed: boolean;
 
         toJSON(): IdentityCardJSON;
+    }
+
+    declare class Metric {
+        constructor(addon: Addon);
+
+        private eventLoaded: boolean;
+        private addon: Addon;
+        private publishMetrics : Map<MetricIdentityCard.name, number>;
+
+        public entities: Entity[];
+        public mic: Map<string, MetricIdentityCard>;
+        public linker: Map<Entity.id, entities.index|MetricIdentityCard.name>;
+
+        private async declare(parentIndex: number);
+        private async declareEntity(entity: Entity): Promise<number>;
+        private async declareIdentityCard(mic: MetricIdentityCard): Promise<void>;
+        private sendMessage(event: string, ...data: any): Promise<number>;
+        private setLinker(parent: number, value: number|string): void;
+
+        public identityCard(name: string, options: IdentityCardOption): MetricIdentityCard;
+        public entity(name: string, options: EntityOption): Entity;
+        public publish(name: string, value: number, harvestedAt: Date): void;
     }
 
 }

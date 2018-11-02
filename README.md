@@ -126,12 +126,35 @@ interface IdentityCardOption {
 }
 ```
 
+### metric.publish(name: string, value: number, harvestedAt: Date): void
+Publish metric in local db
+```js
+const Unit = require("@slimio/units");
+const Metrics = require("./Metrics");
+const Addon = require("@slimio/addon");
+
+const CPU = new Addon("CPU");
+const metric = new Metrics(CPU);
+
+CPU.on("start", () => {
+    const entity = metric.entity("CPU", {
+        description: "Central Processing Unit"
+    });
+    const cardConfig = { unit: Unit.Pourcent, entity };
+    metric.identityCard("USER", cardConfig);
+
+    setInterval(() => {
+        const harvestedAt = Date.now();
+        const cpus = os.cpus();
+        metric.publish(`CPU_USER`, cpus[0].times.user, harvestedAt);
+    }, 5000);
+}
+```
+
 ## Licence
 
 MIT
 
 ## TODO
 
-- [x] Write d.ts
-- [ ] Test offset async publish Entity and IdentityCard
-- [ ] Publish metrics
+- Test offset async publish Entity, IdentityCard and Metrics

@@ -33,6 +33,7 @@ class Metric {
         /** @type {Map<Entity.id, entities.index|MetricIdentityCard.name>} */
         this.linker = new Map();
 
+        /** @type {Map<MetricIdentityCard.name, number>} */
         this.publishMetrics = new Map();
 
         this.addon.on("addonLoaded", (addonName) => {
@@ -224,12 +225,13 @@ class Metric {
      * @memberof Metric#
      * @param {String} name name
      * @param {Number} value value
+     * @param {Date} harvestedAt harvested time of the metric
      *
      * @throws {TypeError}
      * @throws {Error}
      * @return {void}
      */
-    publish(name, value, harvestedAt=Date.now()) {
+    publish(name, value, harvestedAt = Date.now()) {
         if (!is.string(name)) {
             throw new TypeError("name param must a <string> type");
         }
