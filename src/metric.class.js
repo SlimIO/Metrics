@@ -135,7 +135,7 @@ class Metric {
         if (this.publishMetrics.has(data.name)) {
             const metrics = this.publishMetrics.get(data.name);
             for (const { micId, value, harvestedAt } of metrics) {
-                this.addon.sendMessage("events.publish_metric", { args: [micId, value, harvestedAt] });
+                this.addon.sendMessage("events.publish_metric", { args: [micId, [value, harvestedAt]] });
             }
         }
 
@@ -261,7 +261,7 @@ class Metric {
             }
         }
         else {
-            this.addon.sendMessage("events.publish_metric", { args: [mic.id, value, harvestedAt] });
+            this.addon.sendMessage("events.publish_metric", { args: [mic.id, [value, harvestedAt]] });
         }
     }
 }
