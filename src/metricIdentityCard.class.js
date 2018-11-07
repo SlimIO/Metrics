@@ -30,7 +30,7 @@ class MetricIdentityCard {
             throw new TypeError("name param must be a string");
         }
 
-        if (!is.nullOrUndefined(options.unit) && options.unit.constructor.name === "Unit") {
+        if (!is.nullOrUndefined(options.unit) && options.unit.constructor.name !== "Unit") {
             throw new TypeError("options.unit param must be an <Unit> object");
         }
 

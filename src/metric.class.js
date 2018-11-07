@@ -40,7 +40,6 @@ class Metric {
 
         this.addon.on("addonLoaded", (addonName) => {
             if (addonName === "events") {
-                console.log(`AddonLoaded : ${addonName}`);
                 this.eventLoaded = true;
                 if (this.entities.length > 0) {
                     this.declare();
