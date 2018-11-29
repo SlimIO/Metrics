@@ -2,9 +2,10 @@ test/
 tests/
 coverage/
 .nyc_output/
-jsdoc/
+docs/
 jsdoc.json
 CONTRIBUTING.md
 .editorconfig
 .eslintrc
 .gitignore
+commitlint.config.js
