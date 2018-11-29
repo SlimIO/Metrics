@@ -11,7 +11,6 @@ const is = require("@slimio/is");
  * @property {Boolean} dbPushed db controller
  */
 class Entity {
-
     /**
      * @constructor
      * @param {!String} name Entity name

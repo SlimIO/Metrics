@@ -13,7 +13,6 @@ const is = require("@slimio/is");
  * @property {Boolean} dbPushed Db controller
  */
 class MetricIdentityCard {
-
     /**
      * @constructor
      * @param {!String} name name

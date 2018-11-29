@@ -11,7 +11,6 @@ const MetricIdentityCard = require("./metricIdentityCard.class.js");
  * @property {Boolean=} [eventLoaded=false] Event addon is loaded ?
  */
 class Metric {
-
     /**
      * @constructor
      * @param {!Addon} addon Addon
@@ -134,10 +133,12 @@ class Metric {
         if (this.publishMetrics.has(data.name)) {
             const metrics = this.publishMetrics.get(data.name);
             for (const { micId, value, harvestedAt } of metrics) {
-                this.addon.sendMessage("events.publish_metric", { args: [micId, [value, harvestedAt]] });
+                this.addon.sendMessage("events.publish_metric", { args: [micId, [value, harvestedAt]] }).subscribe({
+                    next: resolve,
+                    error: console.log(err)
+                });
             }
         }
-
     }
 
     /**
@@ -152,7 +153,10 @@ class Metric {
      */
     sendMessage(event, ...data) {
         return new Promise((resolve) => {
-            this.addon.sendMessage(event, { args: data }).subscribe(resolve);
+            this.addon.sendMessage(event, { args: data }).subscribe({
+                next: resolve,
+                error: console.log(err)
+            });
         });
     }
 
@@ -166,11 +170,11 @@ class Metric {
      * @returns {void}
      */
     setLinker(parent, value) {
-        if (!this.linker.has(parent)) {
-            this.linker.set(parent, [value]);
+        if (this.linker.has(parent)) {
+            this.linker.get(parent).push(value);
         }
         else {
-            this.linker.get(parent).push(value);
+            this.linker.set(parent, [value]);
         }
     }
 
@@ -249,18 +253,21 @@ class Metric {
         }
 
         const mic = this.mic.get(name);
-        if (!this.eventLoaded || this.eventLoaded && !mic.dbPushed) {
-            if (!this.publishMetrics.has(name)) {
-                this.publishMetrics.set(name, [{ micId: mic.id, value, harvestedAt }]);
-            }
-            else {
+        if (!this.eventLoaded || !mic.dbPushed) {
+            if (this.publishMetrics.has(name)) {
                 const micArr = this.publishMetrics.get(name);
                 micArr.push({ micId: mic.id, value, harvestedAt });
                 this.publishMetrics.set(name, micArr);
             }
+            else {
+                this.publishMetrics.set(name, [{ micId: mic.id, value, harvestedAt }]);
+            }
         }
         else {
-            this.addon.sendMessage("events.publish_metric", { args: [mic.id, [value, harvestedAt]] });
+            this.addon.sendMessage("events.publish_metric", { args: [mic.id, [value, harvestedAt]] }).subscribe({
+                next: resolve,
+                error: console.log(err)
+            });
         }
     }
 }
