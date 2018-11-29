@@ -135,7 +135,7 @@ class Metric {
             for (const { micId, value, harvestedAt } of metrics) {
                 this.addon.sendMessage("events.publish_metric", { args: [micId, [value, harvestedAt]] }).subscribe({
                     next: resolve,
-                    error: console.log(err)
+                    error: console.error
                 });
             }
         }
@@ -155,7 +155,7 @@ class Metric {
         return new Promise((resolve) => {
             this.addon.sendMessage(event, { args: data }).subscribe({
                 next: resolve,
-                error: console.log(err)
+                error: console.error
             });
         });
     }
@@ -266,7 +266,7 @@ class Metric {
         else {
             this.addon.sendMessage("events.publish_metric", { args: [mic.id, [value, harvestedAt]] }).subscribe({
                 next: resolve,
-                error: console.log(err)
+                error: console.error
             });
         }
     }
