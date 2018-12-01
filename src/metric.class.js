@@ -37,13 +37,16 @@ class Metric {
         /** @type {Map<MetricIdentityCard.name, number>} */
         this.publishMetrics = new Map();
 
-        this.addon.on("addonLoaded", (addonName) => {
-            if (addonName === "events") {
-                this.eventLoaded = true;
-                if (this.entities.length > 0) {
-                    this.declare();
+        this.addon.of("Addon.ready").subscribe({
+            next: (addonName) => {
+                if (addonName === "events") {
+                    this.eventLoaded = true;
+                    if (this.entities.length > 0) {
+                        this.declare();
+                    }
                 }
-            }
+            },
+            error: console.error
         });
     }
 
