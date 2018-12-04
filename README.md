@@ -160,5 +160,4 @@ CPU.on("start", () => {
 MIT
 
 ## TODO
-
-- Test offset async publish Entity, IdentityCard and Metrics
+- Make test
