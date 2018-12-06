@@ -137,7 +137,6 @@ class Metric {
             const metrics = this.publishMetrics.get(data.name);
             for (const { micId, value, harvestedAt } of metrics) {
                 this.addon.sendMessage("events.publish_metric", { args: [micId, [value, harvestedAt]] }).subscribe({
-                    next: resolve,
                     error: console.error
                 });
             }
@@ -268,7 +267,6 @@ class Metric {
         }
         else {
             this.addon.sendMessage("events.publish_metric", { args: [mic.id, [value, harvestedAt]] }).subscribe({
-                next: resolve,
                 error: console.error
             });
         }
