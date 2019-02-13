@@ -84,7 +84,6 @@ function Metric(addon) {
             await doWhile({ max: 10, ms: 10 }, () => !entities.has(mic.entity));
         }
 
-        console.log(mic.toJSON());
         const micID = await sendMessage("events.declare_mic", [mic.toJSON()]);
         mic.id = micID;
         const entity = entities.get(mic.entity);
