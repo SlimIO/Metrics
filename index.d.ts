@@ -2,37 +2,13 @@
 /// <reference types="@types/es6-shim" />
 /// <reference types="@slimio/addon" />
 
-import { AddressInfo } from "net";
-
-declare class Metrics {
-    constructor(addon: Addon);
-
-    private eventLoaded: boolean;
-    private addon: Addon;
-    private publishMetrics : Map<Metrics.MetricIdentityCard.name, number>;
-
-    public entities: Metrics.Entity[];
-    public mic: Map<string, Metrics.MetricIdentityCard>;
-    public linker: Map<Entity.id, number | Metrics.MetricIdentityCard.name>;
-
-    private async declare(parentIndex: number);
-    private async declareEntity(entity: Metrics.Entity): Promise<number>;
-    private async declareIdentityCard(mic: Metrics.MetricIdentityCard): Promise<void>;
-    private sendMessage(event: string, ...data: any): Promise<number>;
-    private setLinker(parent: number, value: number|string): void;
-
-    public identityCard(name: string, options: Metrics.IdentityCardOption): MetricIdentityCard;
-    public entity(name: string, options: Metrics.EntityOption): Metrics.Entity;
-    public publish(name: string, value: number, harvestedAt: Date): void;
-}
+declare function Metrics(addon: Addon): {
+    Global: Map<number, null | number | Metrics.Entity>
+    Entity: typeof Metrics.Entity,
+    MetricIdentityCard: typeof Metrics.MetricIdentityCard
+};
 
 declare namespace Metrics {
-
-    interface EntityOption {
-        description?: string;
-        parent?: Entity;
-    }
-
     interface EntityJSON {
         name: string;
         description: string;
@@ -43,14 +19,17 @@ declare namespace Metrics {
     }
 
     declare class Entity {
-        constructor(name: string, options?: EntityOption);
+        constructor(name: string, options?: {
+            description?: string;
+            parent?: Entity | number;
+        });
 
         public name: string;
         public description: string;
         public parent: number;
         public descriptors: Map<string, string|number>;
-        public id: number;
-        public dbPushed: boolean;
+        public id: number | null;
+        public mics: MetricIdentityCard[];
 
         toJSON(): EntityJSON;
         set(key: string, value: number|string): Entity;
@@ -58,7 +37,7 @@ declare namespace Metrics {
 
     interface IdentityCardOption {
         unit: Units;
-        entity: Entity;
+        entity: Entity | number;
         description?: string;
         max?: number;
         interval?: number;
@@ -80,13 +59,13 @@ declare namespace Metrics {
         public unit: Units;
         public interval: number;
         public max: number;
-        public entity: Entity;
+        public entity: Entity | number;
         public id: number;
-        public dbPushed: boolean;
+        public readonly hasLocalRef: boolean;
 
+        publish(value: any, harvestedAt?: number): void;
         toJSON(): IdentityCardJSON;
     }
-
 }
 
 export as namespace Metrics;
