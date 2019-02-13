@@ -22,7 +22,6 @@ class Metric {
             throw new TypeError("addon param must be an Addon object");
         }
 
-        this.eventLoaded = false;
         this.addon = addon;
 
         /** @type {Array<Entity>} */
@@ -37,16 +36,14 @@ class Metric {
         /** @type {Map<MetricIdentityCard.name, number>} */
         this.publishMetrics = new Map();
 
-        this.addon.of("Addon.ready").subscribe({
-            next: (addonName) => {
-                if (addonName === "events") {
-                    this.eventLoaded = true;
-                    if (this.entities.length > 0) {
-                        this.declare();
-                    }
-                }
-            },
-            error: console.error
+        if (!this.addon.locks.has("events")) {
+            this.addon.lockOn("events");
+        }
+
+        this.addon.on("awake", () => {
+            if (this.entities.length > 0) {
+                this.declare();
+            }
         });
     }
 
@@ -193,7 +190,7 @@ class Metric {
         const identityCard = new MetricIdentityCard(name, options);
         this.mic.set(identityCard.name, identityCard);
 
-        if (this.eventLoaded === true) {
+        if (this.addon.isAwake) {
             if (options.entity.dbPushed === true) {
                 this.declareIdentityCard(identityCard);
 
@@ -219,8 +216,8 @@ class Metric {
         const index = this.entities.push(ent);
 
 
-        if (this.eventLoaded === true) {
-            if (Reflect.has(options, "parent") && options.parent.dbPushed === true) {
+        if (this.addon.isAwake) {
+            if (Reflect.has(options, "parent") && options.parent.dbPushed) {
                 this.declareEntity(ent);
 
                 return ent;
@@ -255,7 +252,7 @@ class Metric {
         }
 
         const mic = this.mic.get(name);
-        if (!this.eventLoaded || !mic.dbPushed) {
+        if (!this.addon.isAwake || !mic.dbPushed) {
             if (this.publishMetrics.has(name)) {
                 const micArr = this.publishMetrics.get(name);
                 micArr.push({ micId: mic.id, value, harvestedAt });
