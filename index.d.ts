@@ -22,7 +22,7 @@ declare class Metrics {
     private setLinker(parent: number, value: number|string): void;
 
     public identityCard(name: string, options: Metrics.IdentityCardOption): MetricIdentityCard;
-    public entity(name: string, options: Metrics.EntityOption): Entity;
+    public entity(name: string, options: Metrics.EntityOption): Metrics.Entity;
     public publish(name: string, value: number, harvestedAt: Date): void;
 }
 
