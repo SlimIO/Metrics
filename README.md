@@ -89,12 +89,20 @@ Create a new Entity Object. Options is described by the following interface:
 ```
 
 if the parent is not defined it will be defined to integer `1` (which corresponds to the root entity of the product).
+```js
+new Entity("CPU", {
+    description: "hello world!"
+});
+```
 </details>
 
 <details><summary>set(key: string, value: number|string): this</summary>
 <br />
 
 Set a new static descriptor on the entity. Descriptors can be added at any time !
+```js
+new Entity("CPU").set("foo", "bar");
+```
 </details>
 
 <details><summary>toJSON(): EntityJSON</summary>
@@ -131,6 +139,15 @@ interface IdentityCardOption {
     max?: number;
     interval?: number;
 }
+```
+
+`max` will be defined by `Units.max`. The default interval is equal to `5`.
+
+```js
+new MetricIdentityCard("CPU_1", {
+    units: Units.Seconds,
+    entity: CPU
+});
 ```
 </details>
 
