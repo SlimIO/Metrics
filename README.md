@@ -112,6 +112,7 @@ interface EntityJSON {
 }
 ```
 </details>
+<br />
 
 > Note: the Entity.description field is a getter/setter. Any update will be automatically pushed to the event database!
 

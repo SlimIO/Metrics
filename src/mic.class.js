@@ -121,7 +121,7 @@ function classExport(event) {
 
         /**
          * @method toJSON
-         * @memberof IdentityCard#
+         * @memberof MetricIdentityCard#
          *
          * @return {Object}
          */

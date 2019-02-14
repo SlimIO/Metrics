@@ -1,5 +1,5 @@
 /**
- * @namespace utils
+ * @namespace Utils
  */
 
 /**
