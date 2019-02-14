@@ -53,8 +53,10 @@ function Metric(addon) {
         event.on("register_entity_descriptor", handler);
 
         const entityID = await sendMessage("events.declare_entity", [entity.toJSON()]);
-        entity.id = entityID;
-        entities.set(entityID, entity);
+        if (entity.id === null) {
+            entity.id = entityID;
+            entities.set(entityID, entity);
+        }
         event.removeEventListener("register_entity_descriptor", handler);
 
         for (const [, key, value] of descriptors) {

@@ -1,8 +1,12 @@
 // Require Third-Party Dependencies
 const is = require("@slimio/is");
 
+// Require Internal Dependencies
+const { privateKey } = require("./utils");
+
 // Symbols
 const SymID = Symbol("id");
+const SymDesc = Symbol("desc");
 
 function exportClass(event) {
     /**
@@ -36,26 +40,46 @@ function exportClass(event) {
             }
 
             this.name = name;
-            this.description = options.description ? options.description : "N/A";
             this.parent = parent instanceof Entity ? parent.id : parent;
+            privateKey(this, SymID);
+            privateKey(this, SymDesc, options.description ? options.description : "N/A");
 
             /** @type {Map<string, number|string>} */
             this.descriptors = new Map();
             this.mics = [];
 
-            Reflect.defineProperty(this, SymID, {
-                value: null,
-                enumerable: false,
-                configurable: false,
-                writable: true
-            });
-
             event.emit("create_entity", this);
+        }
+
+        /**
+         * @public
+         * @memberof Entity#
+         * @returns {String} description
+         */
+        get description() {
+            return this[SymDesc];
+        }
+
+        /**
+         * @param {!String} desc desc
+         * @returns {void}
+         * @throws {TypeError}
+         */
+        set description(desc) {
+            if (typeof desc !== "string") {
+                throw new TypeError("desc must be a string!");
+            }
+
+            this[SymDesc] = desc;
+            if (this.id !== null) {
+                event.emit("create_entity", this);
+            }
         }
 
         /**
          * @param {!Number} id id
          * @returns {void}
+         * @throws {TypeError}
          */
         set id(id) {
             if (typeof id !== "number") {
