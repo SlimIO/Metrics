@@ -88,6 +88,8 @@ function Metric(addon) {
 
         const micID = await sendMessage("events.declare_mic", [mic.toJSON()]);
         mic.id = micID;
+        mic.emit("ready");
+
         const entity = entities.get(mic.entity);
         if (entity instanceof localEntity) {
             entity.mics.push(mic);

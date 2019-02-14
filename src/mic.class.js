@@ -1,8 +1,15 @@
+// Require Node.js Dependencies
+const events = require("events");
+
 // Require Third-Party Dependencies
 const is = require("@slimio/is");
 
+// Require Internal Dependencies
+const { privateKey } = require("./utils");
+
 // Symbols
 const SymID = Symbol("id");
+const SymMetrics = Symbol("metrics");
 
 function classExport(event) {
     /**
@@ -16,7 +23,7 @@ function classExport(event) {
      * @property {Number} id id
      * @property {Boolean} dbPushed Db controller
      */
-    return class MetricIdentityCard {
+    return class MetricIdentityCard extends events {
         /**
          * @constructor
          * @param {!String} name name
@@ -28,6 +35,7 @@ function classExport(event) {
          * @throws {TypeError}
          */
         constructor(name, options = Object.create(null)) {
+            super();
             if (!is.string(name)) {
                 throw new TypeError("name param must be a string");
             }
@@ -47,14 +55,16 @@ function classExport(event) {
             this.interval = options.interval;
             this.max = options.unit.max;
             this.entity = options.entity;
-            Reflect.defineProperty(this, SymID, {
-                value: null,
-                enumerable: false,
-                configurable: false,
-                writable: true
-            });
+            privateKey(this, SymID);
+            privateKey(this, SymMetrics, []);
 
             event.emit("create_mic", this);
+            this.on("ready", () => {
+                const lMetrics = this[SymMetrics].splice(0);
+                for (const payload of lMetrics) {
+                    event.emit("publish_metric", [this.id, ...payload]);
+                }
+            });
         }
 
         /**
@@ -100,9 +110,13 @@ function classExport(event) {
             if (!this.hasLocalRef) {
                 throw new Error("Unable to publish metric without local entity ref!");
             }
-            // TODO: Handle null case ?
 
-            event.emit("publish_metric", [this.id, value, harvestedAt]);
+            if (this.id === null) {
+                this[SymMetrics].push([value, harvestedAt]);
+            }
+            else {
+                event.emit("publish_metric", [this.id, value, harvestedAt]);
+            }
         }
 
         /**
