@@ -47,15 +47,15 @@ declare namespace Metrics {
     }
 
     interface IdentityCardJSON {
-        public description: string;
-        public unit: number;
-        public entityId: number;
-        public max: number;
-        public interval: number;
+        description: string;
+        unit: number;
+        entityId: number;
+        max: number;
+        interval: number;
     }
 
     declare class MetricIdentityCard {
-        constructor(name: string, config?: IdentityCardOption);
+        constructor(name: string, options?: IdentityCardOption);
 
         public name: string;
         public description: string;

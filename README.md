@@ -58,7 +58,101 @@ module.exports = CPUAddon;
 ```
 
 ## API
-TBC
+The metrics package return a function described by the following interface:
+```ts
+declare function Metrics(addon: Addon): {
+    Global: {
+        entities: Map<number, null | number | Metrics.Entity>;
+        mics: Map<string, Metrics.MetricIdentityCard>;
+    };
+    Entity: typeof Metrics.Entity,
+    MetricIdentityCard: typeof Metrics.MetricIdentityCard
+};
+```
+
+Each instance of Entity and MetricIdentityCard are unique to the local Addon. Global is a freezed Object which contains information on Entity and MetricIdentityCard (helpful if you want **to retrieve a MIC by his name** for example).
+
+There is no way to retrieve Entity by name (the operation cost is `O(1)`). The callback `events.search_entities` can be used instead.
+
+### Entity
+This section describe the methods and properties of Entity Object.
+
+<details><summary>constructor(name: string, options?: EntityOptions)</summary>
+<br />
+
+Create a new Entity Object. Options is described by the following interface:
+```ts
+{
+    description?: string;
+    parent?: Entity | number;
+}
+```
+
+if the parent is not defined it will be defined to integer `1` (which corresponds to the root entity of the product).
+</details>
+
+<details><summary>set(key: string, value: number|string): this</summary>
+<br />
+
+Set a new static descriptor on the entity. Descriptors can be added at any time !
+</details>
+
+<details><summary>toJSON(): EntityJSON</summary>
+<br />
+
+Return the JSON version of Entity Object.
+```ts
+interface EntityJSON {
+    name: string;
+    description: string;
+    descriptors: {
+        [key: string]: string;
+    };
+    parent: number;
+}
+```
+</details>
+
+> Note: the Entity.description field is a getter/setter. Any update will be automatically pushed to the event database!
+
+### MetricIdentityCard
+This section describe the methods and properties of MetricIdentityCard Object.
+
+<details><summary>constructor(name: string, options?: IdentityCardOption)</summary>
+<br />
+
+Create a new MetricIdentityCard Object. Options is described by the following interface:
+```ts
+interface IdentityCardOption {
+    unit: Units;
+    entity: Entity | number;
+    description?: string;
+    max?: number;
+    interval?: number;
+}
+```
+</details>
+
+<details><summary>publish(value: any, harvestedAt?: number): void</summary>
+<br />
+
+Publish a new raw metric to the event DB.
+</details>
+
+<details><summary>toJSON(): IdentityCardJSON</summary>
+<br />
+
+Return the JSON version of MetricIdentityCard Object.
+```ts
+interface IdentityCardJSON {
+    description: string;
+    unit: number;
+    entityId: number;
+    max: number;
+    interval: number;
+}
+```
+</details>
 
 ## License
 MIT
