@@ -110,7 +110,12 @@ function Metric(addon) {
             addon.lockOn("events");
         }
 
-        addon.on("awake", () => {
+        addon.on("awake", async() => {
+            const allEntities = await sendMessage("events.search_entities", [{ fields: "id" }]);
+            for (const ent of allEntities) {
+                entities.set(ent.id, null);
+            }
+
             for (const [type, element] of cache) {
                 event.emit(EVENT_MAP[type], element);
             }
