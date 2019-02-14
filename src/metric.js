@@ -44,7 +44,7 @@ function Metric(addon) {
 
         // Handle unknown parent
         if (!entities.has(entity.parent)) {
-            await doWhile({ max: 10, ms: 10 }, () => !entities.has(entity.parent));
+            await doWhile({ max: 6, ms: 5 }, () => !entities.has(entity.parent));
         }
 
         const descriptors = [];
@@ -83,7 +83,7 @@ function Metric(addon) {
 
         // Handle unknown entity
         if (!entities.has(mic.entity)) {
-            await doWhile({ max: 10, ms: 10 }, () => !entities.has(mic.entity));
+            await doWhile({ max: 6, ms: 5 }, () => !entities.has(mic.entity));
         }
 
         const micID = await sendMessage("events.declare_mic", [mic.toJSON()]);
