@@ -6,7 +6,7 @@ import * as events from "events";
 
 declare function Metrics(addon: Addon): {
     Global: {
-        entities: Map<number, null | number | Metrics.Entity>;
+        entities: Set<number | Metrics.Entity>;
         mics: Map<string, Metrics.MetricIdentityCard>;
     };
     Entity: typeof Metrics.Entity,
@@ -31,7 +31,7 @@ declare namespace Metrics {
 
         public name: string;
         public description: string;
-        public parent: number;
+        public parent: Entity | number;
         public descriptors: Map<string, string|number>;
         public id: number | null;
         public mics: MetricIdentityCard[];

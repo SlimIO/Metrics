@@ -40,7 +40,7 @@ function exportClass(event) {
             }
 
             this.name = name;
-            this.parent = parent instanceof Entity ? parent.id : parent;
+            this.parent = parent;
             privateKey(this, SymID);
             privateKey(this, SymDesc, options.description ? options.description : "N/A");
 
@@ -138,7 +138,7 @@ function exportClass(event) {
                 name: this.name,
                 description: this.description,
                 descriptors,
-                parent: this.parent
+                parent: this.parent instanceof Entity ? this.parent.id : this.parent
             };
         }
     };

@@ -28,7 +28,7 @@ function Metric(addon) {
     const cache = [];
     const event = new SafeEmitter();
     event.catch((err) => console.error(err));
-    const entities = new Map([[1, null]]);
+    const entities = new Set([1]);
     const mics = new Map();
 
     // Bind new Prototype
@@ -45,7 +45,10 @@ function Metric(addon) {
 
         // Handle unknown parent
         if (!entities.has(entity.parent)) {
-            await doWhile({ max: 6, ms: 5 }, () => !entities.has(entity.parent));
+            const stop = await doWhile({ max: 6, ms: 5 }, () => !entities.has(entity.parent));
+            if (stop) {
+                return void 0;
+            }
         }
 
         const descriptors = [];
@@ -54,10 +57,8 @@ function Metric(addon) {
         event.on("register_entity_descriptor", handler);
 
         const entityID = await sendMessage("events.declare_entity", [entity.toJSON()]);
-        if (entity.id === null) {
-            entity.id = entityID;
-            entities.set(entityID, entity);
-        }
+        entity.id = entityID;
+        entities.add(entity);
         event.removeEventListener("register_entity_descriptor", handler);
 
         for (const [, key, value] of descriptors) {
@@ -85,16 +86,18 @@ function Metric(addon) {
 
         // Handle unknown entity
         if (!entities.has(mic.entity)) {
-            await doWhile({ max: 6, ms: 5 }, () => !entities.has(mic.entity));
+            const stop = await doWhile({ max: 6, ms: 5 }, () => !entities.has(mic.entity));
+            if (stop) {
+                return void 0;
+            }
         }
 
         const micID = await sendMessage("events.declare_mic", [mic.toJSON()]);
         mic.id = micID;
         mic.emit("ready");
 
-        const entity = entities.get(mic.entity);
-        if (entity instanceof localEntity) {
-            entity.mics.push(mic);
+        if (mic.entity instanceof localEntity) {
+            mic.entity.mics.push(mic);
         }
 
         return void 0;
@@ -119,7 +122,7 @@ function Metric(addon) {
         addon.on("awake", async() => {
             const allEntities = await sendMessage("events.search_entities", [{ fields: "id" }]);
             for (const ent of allEntities) {
-                entities.set(ent.id, null);
+                entities.add(ent.id);
             }
 
             const lCache = cache.splice(0, cache.length).sort((a, b) => a[0] - b[0]);
