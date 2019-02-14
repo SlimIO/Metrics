@@ -128,7 +128,7 @@ interface EntityJSON {
 > Note: the Entity.description field is a getter/setter. Any update will be automatically pushed to the event database!
 
 ### MetricIdentityCard
-This section describe the methods and properties of MetricIdentityCard Object.
+This section describe the methods and properties of MetricIdentityCard Object. This object is extended by the Node.js EventEmitter.
 
 <details><summary>constructor(name: string, options?: IdentityCardOption)</summary>
 <br />
@@ -157,7 +157,9 @@ new MetricIdentityCard("CPU_1", {
 <details><summary>publish(value: any, harvestedAt?: number): void</summary>
 <br />
 
-Publish a new raw metric to the event DB.
+Publish a new raw metric to the event DB. When is the MIC is not yet ready, raw metrics are cached awaiting for the local Addon is awakened.
+
+When the MIC is ready to publish, the event `ready` will be throw.
 </details>
 
 <details><summary>toJSON(): IdentityCardJSON</summary>
@@ -174,6 +176,9 @@ interface IdentityCardJSON {
 }
 ```
 </details>
+<br />
+
+> Note: "ready" event will be throw when the MIC is ready to publish raw metrics.
 
 ## License
 MIT

@@ -2,6 +2,8 @@
 /// <reference types="@types/es6-shim" />
 /// <reference types="@slimio/addon" />
 
+import * as events from "events";
+
 declare function Metrics(addon: Addon): {
     Global: {
         entities: Map<number, null | number | Metrics.Entity>;
@@ -54,7 +56,7 @@ declare namespace Metrics {
         interval: number;
     }
 
-    declare class MetricIdentityCard {
+    declare class MetricIdentityCard extends events {
         constructor(name: string, options?: IdentityCardOption);
 
         public name: string;
