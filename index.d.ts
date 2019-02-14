@@ -3,7 +3,10 @@
 /// <reference types="@slimio/addon" />
 
 declare function Metrics(addon: Addon): {
-    Global: Map<number, null | number | Metrics.Entity>
+    Global: {
+        entities: Map<number, null | number | Metrics.Entity>;
+        mics: Map<string, Metrics.MetricIdentityCard>;
+    };
     Entity: typeof Metrics.Entity,
     MetricIdentityCard: typeof Metrics.MetricIdentityCard
 };

@@ -29,6 +29,7 @@ function Metric(addon) {
     const event = new SafeEmitter();
     event.catch((err) => console.error(err));
     const entities = new Map([[1, null]]);
+    const mics = new Map();
 
     // Bind new Prototype
     const localEntity = getEntity(event);
@@ -77,6 +78,7 @@ function Metric(addon) {
     });
 
     event.on("create_mic", async(mic) => {
+        mics.set(mic.name, mic);
         if (!addon.isAwake) {
             return cache.push([TYPES.mic, mic]);
         }
@@ -128,7 +130,7 @@ function Metric(addon) {
     });
 
     return {
-        Global: entities,
+        Global: Object.freeze({ entities, mics }),
         Entity: localEntity,
         MetricIdentityCard: getMic(event)
     };
