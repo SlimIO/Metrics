@@ -16,7 +16,46 @@ $ yarn add @slimio/metrics
 ```
 
 ## Usage exemple
-TBC
+Simple example for CPU Addon:
+
+```js
+// Require Node.js Dependencies
+const os = require("os");
+
+// Require Dependencies
+const Addon = require("@slimio/addon");
+const metrics = require("@slimio/metrics");
+const Units = require("@slimio/units");
+
+// Initialize Addon and Wrappers
+const CPUAddon = new Addon("cpu");
+const { Entity, MetricIdentityCard } = metrics(CPUAddon);
+
+// Declare entities and MIC
+const E_CPU = new Entity("CPU", {
+    description: "Central Processing Unit"
+});
+
+const cpus = os.cpus();
+for (let id = 0; id < cpus.length; id++) {
+    const entity = new Entity(`CPU.${id}`, { parent: E_CPU })
+        .set("speed", cpus[id].speed)
+        .set("model", cpus[id].model);
+
+    const config = { unit: Units.MilliSecond, entity };
+    new MetricIdentityCard("USER", config);
+    new MetricIdentityCard("NICE", cardConfig);
+    new MetricIdentityCard("SYS", cardConfig);
+    new MetricIdentityCard("IDLE", cardConfig);
+    new MetricIdentityCard("IRQ", cardConfig);
+}
+
+CPUAddon.on("awake", () => {
+    CPUAddon.ready();
+});
+
+module.exports = CPUAddon;
+```
 
 ## API
 TBC
