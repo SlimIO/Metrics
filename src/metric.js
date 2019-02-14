@@ -118,9 +118,8 @@ function Metric(addon) {
                 entities.set(ent.id, null);
             }
 
-            let len = cache.length;
-            while (len--) {
-                const [type, element] = cache.pop();
+            const lCache = cache.splice(0, cache.length).sort((a, b) => a[0] - b[0]);
+            for (const [type, element] of lCache) {
                 event.emit(EVENT_MAP[type], element);
             }
         });
