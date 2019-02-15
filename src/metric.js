@@ -38,6 +38,12 @@ function Metric(addon) {
         return new Promise((resolve, reject) => addon.sendMessage(target, { args }).subscribe(resolve, reject));
     }
 
+    function sendRawQoS(micName, value, harvestedAt = Date.now()) {
+        if (mics.has(micName)) {
+            mics.get(micName).publish(value, harvestedAt);
+        }
+    }
+
     event.on("create_entity", async(entity) => {
         if (!addon.isAwake) {
             return cache.push([TYPES.entity, entity]);
@@ -134,6 +140,7 @@ function Metric(addon) {
 
     return {
         Global: Object.freeze({ entities, mics }),
+        sendRawQoS,
         Entity: localEntity,
         MetricIdentityCard: getMic(event)
     };

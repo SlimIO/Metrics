@@ -68,8 +68,9 @@ declare function Metrics(addon: Addon): {
         entities: Map<number, null | number | Metrics.Entity>;
         mics: Map<string, Metrics.MetricIdentityCard>;
     };
-    Entity: typeof Metrics.Entity,
-    MetricIdentityCard: typeof Metrics.MetricIdentityCard
+    sendRawQoS: (micName: string, value: any, harvestedAt?: number) => void;
+    Entity: typeof Metrics.Entity;
+    MetricIdentityCard: typeof Metrics.MetricIdentityCard;
 };
 ```
 
