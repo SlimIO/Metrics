@@ -1,8 +1,6 @@
 // Require Third-Party Dependencies
 const is = require("@slimio/is");
-
-// Require Internal Dependencies
-const { privateKey } = require("./utils");
+const { privateProperty } = require("@slimio/utils");
 
 // Symbols
 const SymID = Symbol("id");
@@ -41,8 +39,8 @@ function exportClass(event) {
 
             this.name = name;
             this.parent = parent;
-            privateKey(this, SymID);
-            privateKey(this, SymDesc, options.description ? options.description : "N/A");
+            privateProperty(this, SymID);
+            privateProperty(this, SymDesc, options.description ? options.description : "N/A");
 
             /** @type {Map<string, number|string>} */
             this.descriptors = new Map();

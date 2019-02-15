@@ -3,9 +3,7 @@ const events = require("events");
 
 // Require Third-Party Dependencies
 const is = require("@slimio/is");
-
-// Require Internal Dependencies
-const { privateKey } = require("./utils");
+const { privateProperty } = require("@slimio/utils");
 
 // Symbols
 const SymID = Symbol("id");
@@ -55,8 +53,8 @@ function classExport(event) {
             this.interval = options.interval;
             this.max = options.unit.max;
             this.entity = options.entity;
-            privateKey(this, SymID);
-            privateKey(this, SymMetrics, []);
+            privateProperty(this, SymID);
+            privateProperty(this, SymMetrics, []);
 
             event.emit("create_mic", this);
             this.on("ready", () => {

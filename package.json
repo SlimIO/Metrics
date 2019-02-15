@@ -53,6 +53,7 @@
   },
   "dependencies": {
     "@slimio/is": "^1.4.0",
-    "@slimio/safe-emitter": "^1.0.6"
+    "@slimio/safe-emitter": "^1.0.6",
+    "@slimio/utils": "^0.7.0"
   }
 }
