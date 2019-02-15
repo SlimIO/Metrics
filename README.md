@@ -78,6 +78,9 @@ Each instance of Entity and MetricIdentityCard are unique to the local Addon. Gl
 
 There is no way to retrieve Entity by name (the operation cost is `O(1)`). The callback `events.search_entities` can be used instead.
 
+### sendRawQoS(micName: string, value: any, harvestedAt?: number): void
+Will search for an mic with the given name in `Global.mics` and execute the method `MetricIdentityCard.publish` on it with the given value and harvested timestamp.
+
 ### Entity
 This section describe the methods and properties of Entity Object.
 
