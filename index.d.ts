@@ -1,6 +1,7 @@
 /// <reference types="node" />
 /// <reference types="@types/es6-shim" />
 /// <reference types="@slimio/addon" />
+/// <reference types="@slimio/tsd" />
 
 import * as events from "events";
 
@@ -14,15 +15,6 @@ declare function Metrics(addon: Addon): {
 };
 
 declare namespace Metrics {
-    interface EntityJSON {
-        name: string;
-        description: string;
-        descriptors: {
-            [key: string]: string;
-        };
-        parent: number;
-    }
-
     declare class Entity {
         constructor(name: string, options?: {
             description?: string;
@@ -36,28 +28,18 @@ declare namespace Metrics {
         public id: number | null;
         public mics: MetricIdentityCard[];
 
-        toJSON(): EntityJSON;
+        toJSON(): SlimIO.RawEntity;
         set(key: string, value: number|string): Entity;
     }
 
-    interface IdentityCardOption {
-        unit: Units;
-        entity: Entity | number;
-        description?: string;
-        max?: number;
-        interval?: number;
-    }
-
-    interface IdentityCardJSON {
-        description: string;
-        unit: number;
-        entityId: number;
-        max: number;
-        interval: number;
-    }
-
     declare class MetricIdentityCard extends events {
-        constructor(name: string, options?: IdentityCardOption);
+        constructor(name: string, options?: {
+            unit: Units;
+            entity: Entity | number;
+            description?: string;
+            max?: number;
+            interval?: number;
+        });
 
         public name: string;
         public description: string;
@@ -69,7 +51,7 @@ declare namespace Metrics {
         public readonly hasLocalRef: boolean;
 
         publish(value: any, harvestedAt?: number): void;
-        toJSON(): IdentityCardJSON;
+        toJSON(): SlimIO.RawIdentityCard;
     }
 }
 

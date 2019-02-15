@@ -108,7 +108,7 @@ new Entity("CPU").set("foo", "bar");
 ```
 </details>
 
-<details><summary>toJSON(): EntityJSON</summary>
+<details><summary>toJSON(): SlimIO.RawEntity</summary>
 <br />
 
 Return the JSON version of Entity Object.
@@ -162,7 +162,7 @@ Publish a new raw metric to the event DB. When is the MIC is not yet ready, raw 
 When the MIC is ready to publish, the event `ready` will be throw.
 </details>
 
-<details><summary>toJSON(): IdentityCardJSON</summary>
+<details><summary>toJSON(): SlimIO.RawIdentityCard</summary>
 <br />
 
 Return the JSON version of MetricIdentityCard Object.
