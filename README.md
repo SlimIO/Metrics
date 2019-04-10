@@ -18,7 +18,7 @@ $ npm i @slimio/metrics
 $ yarn add @slimio/metrics
 ```
 
-## Usage exemple
+## Usage example
 Simple example for CPU Addon:
 
 ```js
