@@ -40,7 +40,7 @@
     "@escommunity/minami": "^1.0.0",
     "@slimio/addon": "^0.16.0",
     "@slimio/eslint-config": "^2.0.4",
-    "@slimio/tsd": "^0.1.0",
+    "@slimio/tsd": "^0.2.0",
     "@types/es6-shim": "^0.31.39",
     "@types/node": "11.13.4",
     "ava": "^1.2.1",
