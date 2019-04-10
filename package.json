@@ -42,7 +42,7 @@
     "@slimio/eslint-config": "^2.0.3",
     "@slimio/tsd": "^0.1.0",
     "@types/es6-shim": "^0.31.39",
-    "@types/node": "^10.12.26",
+    "@types/node": "11.13.4",
     "ava": "^1.2.1",
     "cross-env": "^5.2.0",
     "eslint": "^5.13.0",
