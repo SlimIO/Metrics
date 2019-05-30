@@ -184,5 +184,14 @@ interface IdentityCardJSON {
 
 > Note: "ready" event will be throw when the MIC is ready to publish raw metrics.
 
+## Dependencies
+
+|Name|Refactoring|Security Risk|Usage|
+|---|---|---|---|
+|[@slimio/is](https://github.com/SlimIO/is#readme)|Minor|Low|Type checker|
+|[@slimio/safe-emitter](https://github.com/SlimIO/safeEmitter#readme)|Minor|High|Safe emitter|
+|[@slimio/utils](https://github.com/SlimIO/Utils#readme)|Minor|High|Bunch of useful functions|
+
+
 ## License
 MIT
