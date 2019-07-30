@@ -1,3 +1,5 @@
+"use strict";
+
 // Require Third-Party Dependencies
 const SafeEmitter = require("@slimio/safe-emitter");
 
@@ -15,7 +17,7 @@ const EVENT_MAP = Object.freeze({
 });
 
 /**
- * @func Metric
+ * @function Metric
  * @param {!Addon} addon SlimIO Addon Container
  * @returns {void}
  */

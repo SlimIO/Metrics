@@ -1,14 +1,16 @@
+"use strict";
+
 /**
  * @namespace Utils
  */
 
 /**
  * @async
- * @func doWhile
+ * @function doWhile
  * @memberof Utils#
- * @param {Object} [options] options
+ * @param {object} [options] options
  * @param {any} cond condition to execute in do while
- * @returns {Boolean}
+ * @returns {boolean}
  */
 async function doWhile({ max = 1, ms = 1000 }, cond) {
     let maxRetry = max;

@@ -1,3 +1,5 @@
+"use strict";
+
 // Require Third-Party Dependencies
 const is = require("@slimio/is");
 const { privateProperty } = require("@slimio/utils");
@@ -6,21 +8,22 @@ const { privateProperty } = require("@slimio/utils");
 const SymID = Symbol("id");
 const SymDesc = Symbol("desc");
 
+
 function exportClass(event) {
     /**
      * @class Entity
-     * @property {String} name Entity name
-     * @property {String} description Entity description
+     * @property {string} name Entity name
+     * @property {string} description Entity description
      * @property {Entity} [parent=1] Parent Entity number
-     * @property {Number} id id
+     * @property {number} id id
      */
     return class Entity {
         /**
-         * @constructor
-         * @param {!String} name Entity name
-         * @param {Object} options option
-         * @param {String} options.description option description
-         * @param {Number | Entity} options.parent option entity parent id
+         * @class
+         * @param {!string} name Entity name
+         * @param {object} options option
+         * @param {string} options.description option description
+         * @param {number | Entity} options.parent option entity parent id
          *
          * @throws {TypeError}
          */
@@ -52,14 +55,14 @@ function exportClass(event) {
         /**
          * @public
          * @memberof Entity#
-         * @returns {String} description
+         * @returns {string} description
          */
         get description() {
             return this[SymDesc];
         }
 
         /**
-         * @param {!String} desc desc
+         * @param {!string} desc desc
          * @returns {void}
          * @throws {TypeError}
          */
@@ -75,7 +78,7 @@ function exportClass(event) {
         }
 
         /**
-         * @param {!Number} id id
+         * @param {!number} id id
          * @returns {void}
          * @throws {TypeError}
          */
@@ -90,7 +93,7 @@ function exportClass(event) {
         /**
          * @public
          * @memberof Entity#
-         * @returns {Number} id
+         * @returns {number} id
          */
         get id() {
             return this[SymID];
@@ -98,13 +101,13 @@ function exportClass(event) {
 
         /**
          * @public
-         * @method set
+         * @function set
          * @memberof Entity#
-         * @param {!String} key key
-         * @param {!String|!Number} value value
+         * @param {!string} key key
+         * @param {!string|!number} value value
          *
          * @throws {TypeError}
-         * @return {Entity}
+         * @returns {Entity}
          */
         set(key, value) {
             if (!is.string(key)) {
@@ -121,9 +124,9 @@ function exportClass(event) {
         }
 
         /**
-         * @method toJSON
+         * @function toJSON
          * @memberof Entity#
-         * @return {Object}
+         * @returns {object}
          */
         toJSON() {
             // Replace in futur with Object.fromEntries() ?

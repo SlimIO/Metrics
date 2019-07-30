@@ -1,3 +1,5 @@
+"use strict";
+
 const avaTest = require("ava");
 
 avaTest("husky bypass", (assert) => {

@@ -1,3 +1,5 @@
+"use strict";
+
 // Require Node.js Dependencies
 const events = require("events");
 
@@ -9,26 +11,29 @@ const { privateProperty } = require("@slimio/utils");
 const SymID = Symbol("id");
 const SymMetrics = Symbol("metrics");
 
+/**
+ *
+ */
 function classExport(event) {
     /**
      * @class MetricIdentityCard
-     * @property {String} name MetricIdentityCard name
-     * @property {String} description MetricIdentityCard description
+     * @property {string} name MetricIdentityCard name
+     * @property {string} description MetricIdentityCard description
      * @property {Unit} unit Unit
-     * @property {Number} interval interval
-     * @property {Number} max max
+     * @property {number} interval interval
+     * @property {number} max max
      * @property {Entity} entity entity
-     * @property {Number} id id
-     * @property {Boolean} dbPushed Db controller
+     * @property {number} id id
+     * @property {boolean} dbPushed Db controller
      */
     return class MetricIdentityCard extends events {
         /**
-         * @constructor
-         * @param {!String} name name
-         * @param {!Object} options options
-         * @param {String} options.description options description
+         * @class
+         * @param {!string} name name
+         * @param {!object} options options
+         * @param {string} options.description options description
          * @param {!Unit} options.unit options Unit
-         * @param {!Entity | Number} options.entity options Entity
+         * @param {!Entity | number} options.entity options Entity
          *
          * @throws {TypeError}
          */
@@ -66,7 +71,7 @@ function classExport(event) {
         }
 
         /**
-         * @param {!Number} id id
+         * @param {!number} id id
          * @returns {void}
          */
         set id(id) {
@@ -80,7 +85,8 @@ function classExport(event) {
         /**
          * @public
          * @memberof MetricIdentityCard#
-         * @member {Number} id
+         * @member {number} id
+         * @returns {number}  this[SymID]
          */
         get id() {
             return this[SymID];
@@ -89,17 +95,18 @@ function classExport(event) {
         /**
          * @public
          * @memberof MetricIdentityCard#
-         * @member {Boolean} hasLocalRef
+         * @member {boolean} hasLocalRef
+         * @returns {boolean} if entity is't a number
          */
         get hasLocalRef() {
             return !is.number(this.entity);
         }
 
         /**
-         * @method publish
+         * @function publish
          * @memberof MetricIdentityCard#
          * @param {!any} value Value
-         * @param {Number} [harvestedAt] harvested time
+         * @param {number} [harvestedAt] harvested time
          * @returns {void}
          *
          * @throws {Error}
@@ -118,10 +125,10 @@ function classExport(event) {
         }
 
         /**
-         * @method toJSON
+         * @function toJSON
          * @memberof MetricIdentityCard#
          *
-         * @return {Object}
+         * @returns {object}
          */
         toJSON() {
             return {
