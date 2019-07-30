@@ -46,7 +46,7 @@
     "@commitlint/cli": "^8.0.0",
     "@commitlint/config-conventional": "^8.0.0",
     "@escommunity/minami": "^1.0.0",
-    "@slimio/addon": "^0.17.1",
+    "@slimio/addon": "^0.18.1",
     "@slimio/eslint-config": "^2.0.4",
     "@slimio/tsd": "^0.2.0",
     "@types/es6-shim": "^0.31.39",
