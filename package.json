@@ -28,6 +28,11 @@
     "SlimIO",
     "monitoring"
   ],
+  "files": [
+    "index.js",
+    "inde.d.ts",
+    "src/*.js"
+  ],
   "nyc": {
     "check-coverage": true,
     "per-file": false,
