@@ -26,12 +26,12 @@ Simple example for CPU Addon:
 
 ```js
 // Require Node.js Dependencies
-const os = require("os");
+import os from "os";
 
 // Require Dependencies
-const Addon = require("@slimio/addon");
-const metrics = require("@slimio/metrics");
-const Units = require("@slimio/units");
+import Units from "@slimio/units";
+import metrics from "@slimio/metrics";
+import Addon from "@slimio/addon";
 
 // Initialize Addon and Wrappers
 const CPUAddon = new Addon("cpu");
@@ -56,11 +56,7 @@ for (let id = 0; id < cpus.length; id++) {
     new MetricIdentityCard("IRQ", cardConfig);
 }
 
-CPUAddon.on("awake", () => {
-    CPUAddon.ready();
-});
-
-module.exports = CPUAddon;
+export default CPUAddon;
 ```
 
 ## API
