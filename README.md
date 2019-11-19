@@ -1,7 +1,10 @@
 # SlimIO Metrics
-![V0.4.0](https://img.shields.io/badge/version-0.4.0-blue.svg)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/SlimIO/is/commit-activity)
+![version](https://img.shields.io/badge/dynamic/json.svg?url=https://raw.githubusercontent.com/SlimIO/Metrics/master/package.json&query=$.version&label=Version)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/SlimIO/Metrics/commit-activity)
 ![MIT](https://img.shields.io/github/license/mashape/apistatus.svg)
+![dep](https://img.shields.io/david/SlimIO/Metrics)
+![size](https://img.shields.io/bundlephobia/min/@slimio/metrics)
+![Known Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/SlimIO/Metrics)
 
 This package provide a developer interface to interact with Event Addon to automatically publish Metrics in local database without managing the asynchronous nature of the product.
 
