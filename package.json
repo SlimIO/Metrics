@@ -30,8 +30,8 @@
   ],
   "files": [
     "index.js",
-    "inde.d.ts",
-    "src/*.js"
+    "index.d.ts",
+    "src"
   ],
   "nyc": {
     "check-coverage": true,
