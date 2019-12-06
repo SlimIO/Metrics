@@ -5,7 +5,7 @@
 ![dep](https://img.shields.io/david/SlimIO/Metrics)
 ![size](https://img.shields.io/bundlephobia/min/@slimio/metrics)
 ![Known Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/SlimIO/Metrics)
-[![Build Status](https://travis-ci.com/SlimIO/Metrics.svg?branch=master)](https://travis-ci.com/SlimIO/Metrics)
+[![Build Status](https://travis-ci.com/SlimIO/Metrics.svg?branch=master)](https://travis-ci.com/SlimIO/Metrics) [![Greenkeeper badge](https://badges.greenkeeper.io/SlimIO/Metrics.svg)](https://greenkeeper.io/)
 
 This package provide a developer interface to interact with Event Addon to automatically publish Metrics in local database without managing the asynchronous nature of the product.
 
