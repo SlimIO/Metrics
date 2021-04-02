@@ -49,7 +49,7 @@
   "homepage": "https://github.com/SlimIO/Metrics#readme",
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
-    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/config-conventional": "^12.1.1",
     "@escommunity/minami": "^1.0.0",
     "@slimio/addon": "^0.22.1",
     "@slimio/eslint-config": "^4.1.0",
